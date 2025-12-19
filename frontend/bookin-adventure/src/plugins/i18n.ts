@@ -1,16 +1,17 @@
 import { createI18n } from 'vue-i18n'
+import fr from '@/locals/fr'
 
 const messages = {
-  fr: {
-    welcome: 'Bienvenue sur Book-in Adventure'
-  },
+  fr,
   en: {
     welcome: 'Welcome to Book-in Adventure'
   }
 }
 
 export default createI18n({
+  legacy: false,
   locale: 'fr',
   fallbackLocale: 'en',
-  messages
+  messages,
+  globalInjection: true
 })

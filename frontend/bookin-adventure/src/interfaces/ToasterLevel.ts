@@ -1,0 +1,1 @@
+export type ToasterLevel = "INFO" | "SUCCESS" | "WARNING" | "ERROR";

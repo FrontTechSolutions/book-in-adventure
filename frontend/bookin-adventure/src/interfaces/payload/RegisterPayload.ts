@@ -5,7 +5,6 @@ export interface RegisterClientPayload {
   firstName: string
   role: 'client'
   phone?: string
-  profilePhoto?: string
   birthDate?: string
 }
 
@@ -18,10 +17,6 @@ export interface RegisterProPayload {
   phone: string
   companyName: string
   companyAddress: string
-  activityDescription: string
-  logo?: string
-  openingHours?: Record<string, any>
-  website?: string
 }
 
 export type RegisterPayload = RegisterClientPayload | RegisterProPayload

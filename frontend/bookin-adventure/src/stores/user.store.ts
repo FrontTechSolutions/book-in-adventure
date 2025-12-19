@@ -1,6 +1,6 @@
-import { ref, Ref, computed } from 'vue'
+import { ref, type Ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import axios from '../plugins/axios'
+import axios from '@/plugins/axios'
 import { type User } from '../interfaces/User'
 import { type RegisterPayload } from '../interfaces/payload/RegisterPayload'
 
@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', () => {
       const res = await axios.post<{ user: User; token: string }>('/auth/register', payload)
       user.value = res.data.user
       token.value = res.data.token
+      if (token.value)
       localStorage.setItem('token', token.value)
     } catch (err: any) {
       error.value = err.response?.data?.error || 'error.register_failed'
@@ -41,7 +42,9 @@ export const useUserStore = defineStore('user', () => {
   const userRole = computed(() => {
     if (!token.value) return null
     try {
-      const payload = JSON.parse(atob(token.value.split('.')[1]))
+      const parts = token.value.split('.')
+      if (parts.length < 2 || !parts[1]) return null
+      const payload = JSON.parse(atob(parts[1]))
       return payload.role || null
     } catch {
       return null

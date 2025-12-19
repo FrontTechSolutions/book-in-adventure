@@ -1,0 +1,537 @@
+openapi: 3.0.3
+info:
+  title: Book-in Adventure API – Admin/Pro
+  version: 1.0.0
+  description: |
+    OpenAPI specification for the admin and professional endpoints of Book-in Adventure.
+servers:
+  - url: http://localhost:3000
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user (client or pro)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [client, pro]
+      responses:
+        '201':
+          description: User registered
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authenticated
+  /auth/forgot-password:
+    post:
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Reset email sent
+  /users/{id}:
+    get:
+      summary: Get user info
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /pros/{id}/stripe/onboard:
+    post:
+      summary: Stripe onboarding for pro
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stripe onboarding link
+  /pros/{id}/activities:
+    post:
+      summary: Create a new activity
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        '201':
+          description: Activity created
+    get:
+      summary: List all activities for the pro
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /pros/{id}/activities/{activityId}:
+    patch:
+      summary: Update an activity
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: activityId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        '200':
+          description: Activity updated
+    delete:
+      summary: Delete an activity
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: activityId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Activity deleted
+  /cart/add:
+    post:
+      summary: Add slot/activity to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slotId:
+                  type: string
+                activityId:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Added to cart
+  /cart:
+    get:
+      summary: Get current cart
+      responses:
+        '200':
+          description: Current cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+  /cart/{itemId}:
+    delete:
+      summary: Remove item from cart
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Item removed
+  /cart/checkout:
+    post:
+      summary: Validate and pay for the cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentMethod:
+                  type: string
+      responses:
+        '200':
+          description: Cart checked out
+  /cart/send-link:
+    post:
+      summary: Generate/send payment link (pro)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cartId:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Payment link sent
+  /calendar/activities:
+    get:
+      summary: List pro activities (calendar)
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /calendar/slots:
+    get:
+      summary: List slots (with filters)
+      responses:
+        '200':
+          description: List of slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+    post:
+      summary: Create a slot (with recurrence)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Slot'
+      responses:
+        '201':
+          description: Slot created
+  /calendar/slots/{id}:
+    patch:
+      summary: Update/move a slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Slot'
+      responses:
+        '200':
+          description: Slot updated
+    delete:
+      summary: Delete/cancel a slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Slot deleted
+  /calendar/slots/{id}/assign-animator:
+    post:
+      summary: Assign animator to slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                animator:
+                  type: string
+      responses:
+        '200':
+          description: Animator assigned
+  /calendar/slots/{id}/clients:
+    get:
+      summary: List clients registered to slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /calendar/slots/{id}/add-client:
+    post:
+      summary: Add existing client to slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Client added
+  /calendar/slots/{id}/invite-client:
+    post:
+      summary: Invite new client to slot (send payment link)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Invitation sent
+  /calendar/slots/{id}/remove-client/{clientId}:
+    delete:
+      summary: Remove client from slot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Client removed
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        lastName:
+          type: string
+        firstName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        notifications:
+          type: object
+          properties:
+            email:
+              type: boolean
+            sms:
+              type: boolean
+        baskets:
+          type: array
+          items:
+            type: string
+        attachedBookings:
+          type: array
+          items:
+            type: string
+        registrationDate:
+          type: string
+          format: date-time
+    Activity:
+      type: object
+      properties:
+        _id:
+          type: string
+        pro_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        gallery:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        category:
+          type: string
+        duration:
+          type: string
+        maxSeats:
+          type: integer
+        animator:
+          type: string
+        color:
+          type: string
+        cancellationPolicy:
+          type: string
+        order:
+          type: integer
+        featured:
+          type: boolean
+    Slot:
+      type: object
+      properties:
+        _id:
+          type: string
+        activity_id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        animator:
+          type: string
+        recurrence:
+          type: string
+        status:
+          type: string
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+              action:
+                type: string
+              user:
+                type: string
+        notifications:
+          type: array
+          items:
+            type: string
+        seatsLeft:
+          type: integer
+    Basket:
+      type: object
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        items:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        paidAt:
+          type: string
+          format: date-time
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+              action:
+                type: string

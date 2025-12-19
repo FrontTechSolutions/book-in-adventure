@@ -1,0 +1,288 @@
+openapi: 3.0.3
+info:
+  title: Book-in Adventure API
+  version: 1.0.0
+  description: |
+    OpenAPI specification for the main public endpoints of Book-in Adventure (client view).
+servers:
+  - url: http://localhost:3000
+paths:
+  /pros/{id}:
+    get:
+      summary: Get professional's public info
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Professional ID
+      responses:
+        '200':
+          description: Professional info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pro'
+  /pros/{id}/activities:
+    get:
+      summary: List all activities for the professional
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Professional ID
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /pros/{id}/slots:
+    get:
+      summary: Get available slots for a given activity and date
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Professional ID
+        - in: query
+          name: activity
+          required: false
+          schema:
+            type: string
+          description: Activity ID
+        - in: query
+          name: date
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Date (YYYY-MM-DD)
+      responses:
+        '200':
+          description: List of slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+  /cart/add:
+    post:
+      summary: Add a slot to the cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slotId:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Slot added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+  /cart:
+    get:
+      summary: Get the current cart
+      responses:
+        '200':
+          description: Current cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+  /cart/checkout:
+    post:
+      summary: Validate and pay for the cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentMethod:
+                  type: string
+      responses:
+        '200':
+          description: Cart checked out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+components:
+  schemas:
+    Pro:
+      type: object
+      properties:
+        _id:
+          type: string
+        companyName:
+          type: string
+        description:
+          type: string
+        photos:
+          type: object
+          properties:
+            profile:
+              type: string
+            cover:
+              type: string
+            gallery:
+              type: array
+              items:
+                type: string
+        color:
+          type: string
+        socialNetworks:
+          type: object
+          properties:
+            facebook:
+              type: string
+            instagram:
+              type: string
+            others:
+              type: array
+              items:
+                type: string
+        openingHours:
+          type: object
+        address:
+          type: string
+        cancellationPolicy:
+          type: string
+        animators:
+          type: array
+          items:
+            type: string
+        activities:
+          type: array
+          items:
+            type: string
+        displayOrder:
+          type: array
+          items:
+            type: string
+        stripeAccountId:
+          type: string
+    Activity:
+      type: object
+      properties:
+        _id:
+          type: string
+        pro_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        gallery:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        category:
+          type: string
+        duration:
+          type: string
+        maxSeats:
+          type: integer
+        animator:
+          type: string
+        color:
+          type: string
+        cancellationPolicy:
+          type: string
+        order:
+          type: integer
+        featured:
+          type: boolean
+    Slot:
+      type: object
+      properties:
+        _id:
+          type: string
+        activity_id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        animator:
+          type: string
+        recurrence:
+          type: string
+        status:
+          type: string
+          enum: [available, full, cancelled]
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+              action:
+                type: string
+              user:
+                type: string
+        notifications:
+          type: array
+          items:
+            type: string
+        seatsLeft:
+          type: integer
+    Basket:
+      type: object
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        items:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [pending, paid, expired]
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        paidAt:
+          type: string
+          format: date-time
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+              action:
+                type: string

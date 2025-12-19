@@ -1,0 +1,91 @@
+
+# Base de Données – Book-in Adventure
+
+## 1. Objectif
+
+Centraliser toutes les informations nécessaires au fonctionnement de la plateforme Book-in Adventure : utilisateurs (clients/professionnels), activités, créneaux, réservations, paniers, paiements, avis, etc. La base doit refléter les besoins métiers décrits dans les parcours fonctionnels (réservation, paiement, gestion pro, calendrier, etc.).
+
+## 2. Stack & Modèle
+
+- **Type** : MongoDB (NoSQL, orienté documents)
+- **Organisation** : Domain Driven Design (DDD)
+- **Modules principaux** : Authentification, Professionnels, Activités, Calendrier, Réservation, Paiement, Panier, Avis
+
+## 3. Collections principales
+
+- **users**  
+	Utilisateurs (clients et pros) :
+	- id, nom, prénom, email, téléphone, mot de passe (hash), rôle (client/pro), notifications (email/SMS), historique paniers, réservations rattachées (via email/téléphone), date d’inscription, etc.
+
+- **pros**  
+	Profils professionnels :
+	- id, user_id, nom entreprise, description, photos (profil, couverture, galerie), couleur dominante, réseaux sociaux, horaires, adresse, politique d’annulation, animateurs, activités, ordre d’affichage, compte Stripe (id), etc.
+
+- **activities**  
+	Activités proposées par les pros :
+	- id, pro_id, titre, description, images, galerie, lieu, tag/catégorie, durée, nombre de places max, animateur, couleur, conditions d’annulation, ordre, mise en avant, etc.
+
+- **slots**  
+	Créneaux de réservation :
+	- id, activity_id, date/heure, durée, animateur, récurrence, statut (disponible, complet, annulé), historique des modifications, notifications, nombre de places restantes, etc.
+
+- **bookings**  
+	Réservations :
+	- id, user_id (ou invité), slot_id, activity_id, panier_id, date, statut (en attente, payé, annulé, remboursé), paiement, politique d’annulation, avis, nombre de places, prix, etc.
+
+- **payments**  
+	Paiements Stripe :
+	- id, booking_id, pro_id, montant, commission, statut Stripe, refund, historique, date, etc.
+
+- **basket (panier)**  
+	Paniers de réservation :
+	- id, user_id (ou invité), items (bookings), statut (en attente, payé, expiré), total, date de création, date de paiement, historique, etc.
+
+- **categories**  
+	Catégories d’activités : id, nom
+
+- **reviews**  
+	Avis utilisateurs : id, user_id, activity_id, note, commentaire, date
+
+## 4. Relations & Intégrité
+
+- Un utilisateur peut être client ou pro (rôle)
+- Un pro gère ses animateurs, ses activités, ses créneaux, sa page publique
+- Un créneau appartient à une activité et peut avoir plusieurs réservations
+- Un panier peut contenir plusieurs réservations (bookings)
+- Un booking peut être créé par un pro pour un invité (paiement par lien), puis rattaché à un compte utilisateur lors de l’inscription
+- Un paiement est lié à une réservation et à un pro (Stripe Connect)
+- Les avis sont liés à des activités et des utilisateurs
+- Les notifications (email/SMS) sont envoyées lors de chaque événement clé (création, modification, annulation, paiement, rappel)
+
+## 5. Initialisation & Scripts
+
+- `schema.js` : création des collections, indexes, contraintes (MongoDB)
+- `seed.js` : insertion de données d’exemple
+
+## 6. Bonnes pratiques
+
+- Utiliser des références (`ObjectId`) pour lier les entités (ex : user_id, pro_id, activity_id, slot_id, panier_id)
+- Indexer les champs de recherche et de filtre (email, statut, date, activité, animateur, pro, etc.)
+- Protéger les données sensibles (hash des mots de passe, tokens)
+- Historiser les modifications importantes (slots, bookings, page pro)
+- Sauvegarder régulièrement la base
+- Respecter le modèle Stripe : ne jamais stocker d’IBAN/carte, toujours référencer les IDs Stripe
+- Ne jamais stocker de données bancaires, tout passe par Stripe
+
+## 7. Flux de données clés
+
+- **Réservation** : création d’un panier → ajout de bookings → paiement Stripe (par compte ou par lien invité) → mise à jour des statuts → rattachement à un compte si inscription a posteriori
+- **Annulation/remboursement** : update booking/panier → refund Stripe → notification utilisateur/pro
+- **Gestion calendrier** : création/modification de slots, gestion des récurrences, notifications automatiques, historique
+- **Gestion page pro** : modification des infos, photos, couleurs, réseaux sociaux, politique d’annulation, ordre d’affichage, historique
+
+## 8. API principales à prévoir
+
+- Gestion des paniers : création, ajout/suppression d’items, validation, paiement, envoi de lien
+- Gestion des activités, slots, bookings, paiements, avis, notifications
+- Rattachement automatique des bookings à un compte lors de l’inscription
+
+## 9. Contact
+
+Pour toute question, contactez l’équipe technique Book-in Adventure.

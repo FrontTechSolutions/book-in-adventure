@@ -41,7 +41,7 @@
 	```bash
 	npm start
 	# ou
-	node src/app.js
+	node backend/src/server.js
 	```
 5. L’API sera disponible sur : [http://localhost:3000](http://localhost:3000) (ou le port défini)
 

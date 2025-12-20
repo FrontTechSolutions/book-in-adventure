@@ -32,6 +32,41 @@ export default {
     name_min: "2 lettres minimum",
     name_no_digits: "Pas de chiffres autorisés",
     age_min: "Vous devez avoir plus de 18 ans"
+  },
+  activity: {
+    title: "Créer une activité",
+    submit: "Créer",
+    fields: {
+      title: "Titre",
+      description: "Description",
+      mainPhoto: "Photo principale",
+      gallery: "Galerie de photos",
+      location: "Lieu de rendez-vous",
+      category: "Tag / Catégorie",
+      duration: "Durée (ex: 1h30)",
+      maxPlaces: "Nombre de places max",
+      animator: "Animateur",
+      color: "Couleur dominante"
+    },
+    category: {
+      coaching: "Coaching",
+      surf: "Surf",
+      yoga: "Yoga",
+      vente: "Vente privée",
+      cuisine: "Atelier cuisine",
+      error: {
+        create: "Erreur lors de la création de l'activité",
+        update: "Erreur lors de la modification de l'activité",
+        delete: "Erreur lors de la suppression de l'activité",
+        fetch: "Erreur lors du chargement des activités"
+      },
+      toaster: {
+        success_title: "Activité créée",
+        success_content: "L'activité a bien été enregistrée.",
+        error_title: "Erreur activité",
+        error_content: "Une erreur est survenue lors de la création."
+      }
+    }
   }
 }
 

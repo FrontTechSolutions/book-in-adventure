@@ -10,11 +10,11 @@ export const useUserStore = defineStore('user', () => {
   const user: Ref<User | null> = ref(null)
   const token = ref<string | null>(null)
   const loading = ref(false)
-  const error = ref<string | null>(null)
+  const error = ref<string | undefined>(undefined)
 
   const register = async (payload: RegisterPayload) => {
     loading.value = true
-    error.value = null
+    error.value = undefined
     try {
       const res = await axios.post<{ user: User; token: string }>('/auth/register', payload)
       user.value = res.data.user

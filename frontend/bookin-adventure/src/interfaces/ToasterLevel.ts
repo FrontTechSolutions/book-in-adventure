@@ -1,1 +1,6 @@
-export type ToasterLevel = "INFO" | "SUCCESS" | "WARNING" | "ERROR";
+export enum ToasterLevel {
+	INFO = "INFO",
+	SUCCESS = "SUCCESS",
+	WARNING = "WARNING",
+	ERROR = "ERROR"
+}

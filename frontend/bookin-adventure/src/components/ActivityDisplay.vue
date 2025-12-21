@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface ActivityDisplayProps {
   activity: {
@@ -18,7 +19,7 @@ interface ActivityDisplayProps {
 }
 
 defineProps<ActivityDisplayProps>();
-const { t } = useI18n();
+
 </script>
 
 

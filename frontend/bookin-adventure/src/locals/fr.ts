@@ -1,3 +1,4 @@
+
 import { fr } from 'vuetify/locale'
 
 export default {
@@ -11,6 +12,15 @@ export default {
       },
     }
   },
+  App:{
+    title: "Book'in Adventure",
+  },
+  auth: {
+    login: 'Me connecter',
+    register: 'Inscription',
+    menu: 'Connexion',
+    logout: 'Déconnexion'
+  },  
   register: {
     title: "Créer un compte",
     client: "Client",
@@ -66,6 +76,47 @@ export default {
         error_title: "Erreur activité",
         error_content: "Une erreur est survenue lors de la création."
       }
+    }
+  },
+  navigation:{
+    pro: {
+      dashboard: "Tableau de bord",
+      activities: "Mes activités",
+      calendar: "Calendrier"
+    },
+    client: {
+      dashboard: "Tableau de bord",
+      profile: "Mon profil",
+      bookings: "Mes réservations"
+    }
+  },
+  userProfile:{
+    title: "Mon profil",
+    edit: "Modifier mon profil",
+    fields:{
+      email: "Email",
+      lastName: "Nom",
+      firstName: "Prénom",
+      legal_lastName: "Nom du responsable légal",
+      legal_firstName: "Prénom du responsable légal",
+      phone: "Téléphone",
+      birthDate: "Date de naissance",
+      companyName: "Nom de l'entreprise",
+      companyAddress: "Adresse de l'entreprise",
+    }
+  },
+  dialogs:{
+    profile_update:{
+      title: "Mettre à jour mon profil",
+      submit: "Enregistrer les modifications",
+      cancel: "Annuler"
+    },
+    login:{
+      title: "Connexion",
+      email: "Email",
+      password  : "Mot de passe",
+      submit: "Se connecter",
+      cancel: "Annuler"
     }
   }
 }

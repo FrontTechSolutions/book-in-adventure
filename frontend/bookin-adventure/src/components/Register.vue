@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user.store'
@@ -27,6 +26,7 @@ const onSubmit = async (formData: any, type: string) => {
       role: 'pro',
       companyName: formData.companyName,
       companyAddress: formData.companyAddress,
+      birthDate: formData.birthDate
     }
   } else {
     payload = {

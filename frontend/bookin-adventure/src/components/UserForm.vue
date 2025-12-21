@@ -6,7 +6,7 @@ import { useUserForm } from '@/composables/useUserForm'
 
 const props = defineProps<{
   mode: 'register' | 'edit' | 'pro-client',
-  initial?: any,
+  initial?: any, // initial form data for edit mode
   loading?: boolean,
   error?: string,
   onSubmit: (payload: any, type: string) => Promise<void>

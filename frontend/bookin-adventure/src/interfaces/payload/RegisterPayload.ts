@@ -17,6 +17,7 @@ export interface RegisterProPayload {
   phone: string
   companyName: string
   companyAddress: string
+  birthDate?: string
 }
 
 export type RegisterPayload = RegisterClientPayload | RegisterProPayload

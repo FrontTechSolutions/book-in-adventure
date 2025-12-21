@@ -13,4 +13,5 @@ export interface User {
   baskets?: string[]
   attachedBookings?: string[]
   registrationDate?: string
+  birthDate: string
 }

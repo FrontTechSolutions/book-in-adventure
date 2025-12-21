@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const authRoutes = require('./interface/routes/auth.routes');
@@ -9,10 +10,14 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/bookinAdventure';
 
 // Middlewares
+app.use(cors({
+  origin: 'http://localhost:5173', // adapte l'URL si besoin
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 // Routes
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Test route
 app.get('/', (req, res) => res.send('API Book-in Adventure OK'));

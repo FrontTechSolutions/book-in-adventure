@@ -1,17 +1,8 @@
 import { defineStore } from 'pinia';
 import type { ActivityPayload } from '../interfaces/payload/ActivityPayload';
+import type { Activity } from '@/interfaces/Activity';
 
-  title: string;
-  description: string;
-  mainPhoto: File | null;
-  gallery: File[];
-  location?: string;
-  category: string;
-  duration: string;
-  maxPlaces: number | null;
-  animator: string;
-  color: string;
-}
+
 
 interface State {
   activities: Activity[];

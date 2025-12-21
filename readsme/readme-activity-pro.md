@@ -20,11 +20,13 @@ Lors de la création ou l’édition d’une activité, le professionnel renseig
 - **Photo principale** (obligatoire) : image de couverture de l’activité
 - **Galerie de photos** (optionnel) : plusieurs images pour illustrer l’activité
 - **Lieu de rendez-vous** (optionnel) : adresse précise du point de départ. Si non renseigné, l’adresse du pro est utilisée par défaut
-- **Tag / Catégorie** (obligatoire) : ex : coaching, surf, yoga, vente privée, atelier cuisine, etc. (choix dans une liste prédéfinie)
+- **Tag / Catégorie** : ex : coaching, surf, yoga, vente privée, atelier cuisine, etc. (choix dans une liste prédéfinie)
++- **Tag / Sous-catégorie** (optionnel) : personnalisable, ex: remise en forme, régime, préparation MMA, etc
 +- **Durée** (obligatoire) : durée de l’activité (ex : 1h30)
 +- **Nombre de places maximum** (obligatoire) : nombre de participants autorisés par créneau pour cette activité
 +- **Animateur** (obligatoire) : personne responsable de l’activité (choix parmi les animateurs du pro)
-+- **Couleur dominante** (optionnel) : couleur personnalisée pour l’affichage dans le calendrier ou la fiche activité
++- **Couleur dominante** (obligatoire) : couleur personnalisée pour l’affichage dans le calendrier ou la fiche activité
+
 
 ## Exemple de formulaire de création d’activité
 

@@ -21,7 +21,7 @@ Permettre aux professionnels de gérer facilement la planification de leurs acti
 - **Gestion des créneaux existants**
   - Drag & drop pour déplacer un créneau à une autre date/heure  (avec notification automatique des clients inscrits)
   - Modification de la durée ou de l’animateur  (avec notification automatique des clients inscrits)
-  - Suppression d’un créneau  (avec notification automatique des clients inscrits)
+  - Suppression d’un créneau
   - Annulation d’un créneau (avec notification automatique des clients inscrits)
 
 - **Gestion des inscriptions**

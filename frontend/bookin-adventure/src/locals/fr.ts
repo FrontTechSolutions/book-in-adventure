@@ -108,7 +108,6 @@ export default {
   dialogs:{
     profile_update:{
       title: "Mettre à jour mon profil",
-      submit: "Enregistrer les modifications",
       cancel: "Annuler"
     },
     login:{

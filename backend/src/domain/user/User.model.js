@@ -14,7 +14,8 @@ const UserSchema = new mongoose.Schema({
   },
   baskets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Basket' }],
   attachedBookings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Booking' }],
-  registrationDate: { type: Date, default: Date.now }
+  registrationDate: { type: Date, default: Date.now },
+  birthDate: { type: Date },
 });
 
 module.exports = mongoose.model('User', UserSchema);

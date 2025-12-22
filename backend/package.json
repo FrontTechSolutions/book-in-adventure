@@ -6,7 +6,6 @@
   "scripts": {
     "start:prod": "cross-env APP_ENV=production node src/server.js",
     "start:dev": "cross-env APP_ENV=development nodemon src/server.js",
-    "start:mock": "cross-env APP_ENV=local:mock nodemon src/server.js",
     "test": "vitest run"
   },
   "dependencies": {

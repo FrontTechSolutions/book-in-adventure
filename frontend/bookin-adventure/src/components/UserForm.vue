@@ -2,11 +2,12 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserForm } from '@/composables/useUserForm'
+import type { User } from '@/interfaces/User';
 
 
 const props = defineProps<{
   mode: 'register' | 'edit' | 'pro-client',
-  initial?: any, // initial form data for edit mode
+  initial?: User, // initial form data for edit mode
   loading?: boolean,
   error?: string,
   onSubmit: (payload: any, type: string) => Promise<void>
@@ -25,10 +26,13 @@ const submit = async () => {
 
 <template>
   <v-form ref="formRef" @submit.prevent="submit">
-    <v-btn-toggle v-model="type" class="mb-4" mandatory>
+    <v-btn-toggle v-if="props.mode === 'register'" v-model="type" class="mb-4" mandatory>
       <v-btn value="client">{{ t('register.client') }}</v-btn>
       <v-btn value="pro">{{ t('register.pro') }}</v-btn>
     </v-btn-toggle>
+
+   
+
     <v-text-field v-model="form.email" :label="t('register.email')" :rules="[rules.required, rules.email]" required />
     <template v-if="props.mode !== 'pro-client'">
       <v-text-field v-model="form.password" :label="t('register.password')" type="password" :rules="[rules.required, rules.password]" required />

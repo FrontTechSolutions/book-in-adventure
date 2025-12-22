@@ -2,14 +2,14 @@
 import type { User } from '@/interfaces/User';
 import { useCommonStore } from '@/stores/common.store';
 import { useUserStore } from '@/stores/user.store';
-import { onMounted, type Ref } from 'vue';
+import { computed, onMounted, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue';
 
 const { t } = useI18n()
 const userStore = useUserStore();
 const commonStore = useCommonStore();
-const userProfile: Ref<User | null> = ref(null);
+const userProfile = computed<User | null>(() => userStore.user ?? null);
 const role = userStore.getRole();    
 onMounted(async () => {
     const result = await userStore.loadUser();
@@ -33,7 +33,7 @@ onMounted(async () => {
             </v-sheet> -->            
         </v-card-text>
         <v-card-actions>
-            <v-btn @click="commonStore.dialogs.profileUpdate = true" color="primary" :to="role === 'pro' ? '/pro-profile-edit' : '/client-profile-edit'">
+            <v-btn @click="commonStore.dialogs.profileUpdate = true" color="primary">
                 {{ t('userProfile.edit') }}
             </v-btn>
         </v-card-actions>

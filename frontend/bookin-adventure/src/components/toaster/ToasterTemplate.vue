@@ -68,16 +68,16 @@ onMounted(() => {
 
 let toasterIcon: string
 switch (props.level) {
-  case ToasterLevelEnum.INFO:
+  case ToasterLevel.INFO:
     toasterIcon = 'mdi-information-outline'
     break
-  case ToasterLevelEnum.SUCCESS:
+  case ToasterLevel.SUCCESS:
     toasterIcon = 'mdi-check-circle-outline'
     break
-  case ToasterLevelEnum.WARNING:
+  case ToasterLevel.WARNING:
     toasterIcon = 'mdi-alert-outline'
     break
-  case ToasterLevelEnum.ERROR:
+  case ToasterLevel.ERROR:
     toasterIcon = 'mdi-close-circle-outline'
     break
   default:
@@ -129,28 +129,28 @@ switch (props.level) {
 }
 
 .l-toaster-INFO {
-  background-color: rgb(var(--v-theme-info200));
+  background-color: blue;
 }
 .progress-bar-INFO {
-  color: rgb(var(--v-theme-info100));
+  color: lightblue;
 }
 .l-toaster-SUCCESS {
-  background-color: rgb(var(--v-theme-success200));
+  background-color: green;
 }
 .progress-bar-SUCCESS {
-  color: rgb(var(--v-theme-success100));
+  color: lightgreen;
 }
 .l-toaster-WARNING {
-  background-color: rgb(var(--v-theme-warning200));
+  background-color: orange;
 }
 .progress-bar-WARNING {
-  color: rgb(var(--v-theme-warning100));
+  color: yellow;
 }
 .l-toaster-ERROR {
-  background-color: rgb(var(--v-theme-error200));
+  background-color: red;
 }
 .progress-bar-ERROR {
-  color: rgb(var(--v-theme-error100));
+  color: lightcoral;
 }
 
 .l-toaster {

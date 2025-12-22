@@ -8,7 +8,7 @@ import { type RegisterPayload } from '../interfaces/payload/RegisterPayload'
 
 
 export const useUserStore = defineStore('user', () => {
-  const user: Ref<User | null> = ref(null)
+  const user: Ref<User | undefined> = ref(undefined)
   const token = ref<string | null>(null)
   const loading = ref(false)
   const error = ref<string | undefined>(undefined)
@@ -30,6 +30,42 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+    const loadUser = async (): Promise<{ user: User | null } | undefined> => {
+      if (!token.value) return undefined
+      loading.value = true
+      try {
+        const res = await axios.get<{ user: User }>(`auth/user/${getUserId()}`, {
+          headers: {
+            Authorization: `Bearer ${token.value}`
+          }
+        })
+        user.value = res.data.user
+        return { user: user.value }
+      } catch (err: any) {
+        error.value = err.response?.data?.error || 'error.load_user_failed'
+        return { user: null }
+      } finally {
+        loading.value = false
+      }
+    }
+
+  const update = async (payload: RegisterPayload) => {
+    loading.value = true
+    error.value = undefined
+    try {
+      const res = await axios.put<{ user: User; token: string }>(`/auth/update/${getUserId()}`, payload)
+      user.value = res.data.user
+      token.value = res.data.token
+      console.log('Registered user:', user.value)
+      if (token.value)
+      localStorage.setItem('token', token.value)
+    } catch (err: any) {
+      error.value = err.response?.data?.error || 'error.register_failed'
+    } finally {
+      loading.value = false
+    }
+  }  
+
   const login = async (email: string, password: string) => {
     loading.value = true
     error.value = undefined
@@ -47,7 +83,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const logout = () => {
-    user.value = null
+    user.value = undefined
     token.value = null
     localStorage.removeItem('token')
   }
@@ -100,24 +136,7 @@ export const useUserStore = defineStore('user', () => {
       }
     }  
 
-    const loadUser = async (): Promise<{ user: User | null } | undefined> => {
-      if (!token.value) return undefined
-      loading.value = true
-      try {
-        const res = await axios.get<{ user: User }>(`auth/user/${getUserId()}`, {
-          headers: {
-            Authorization: `Bearer ${token.value}`
-          }
-        })
-        user.value = res.data.user
-        return { user: user.value }
-      } catch (err: any) {
-        error.value = err.response?.data?.error || 'error.load_user_failed'
-        return { user: null }
-      } finally {
-        loading.value = false
-      }
-    }
+
 
   return {
     user,
@@ -125,6 +144,7 @@ export const useUserStore = defineStore('user', () => {
     loading,
     error,
     register,
+    update,
     logout,
     loadFromStorage,
     userRole,

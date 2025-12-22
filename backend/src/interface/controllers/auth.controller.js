@@ -70,3 +70,48 @@ exports.register = async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updateData = { ...req.body };
+    // Empêcher la mise à jour de certains champs sensibles
+    delete updateData.role;
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password');
+    if (!updatedUser) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    res.status(200).json({ user: updatedUser });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};
+
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });  
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'dev_secret', { expiresIn: '7d' });
+    res.status(200).json({ user: { id: user._id, email: user.email, role: user.role }, token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};
+
+
+exports.getUserById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select('-password');
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};

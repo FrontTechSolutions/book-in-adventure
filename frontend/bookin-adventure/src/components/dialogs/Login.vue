@@ -27,11 +27,11 @@ function login() {
 <template>
   <v-dialog v-model="open" width="400">
     <v-card>
-      <v-card-title>{{ $t('dialogs.login.title') }}</v-card-title>
+      <v-card-title>{{ t('dialogs.login.title') }}</v-card-title>
       <v-card-text>
         <v-text-field
           v-model="email"
-          :label="$t('dialogs.login.email')"
+          :label="t('dialogs.login.email')"
           type="email"
           required
         />

@@ -30,11 +30,8 @@ const submit = async () => {
       <v-btn value="client">{{ t('register.client') }}</v-btn>
       <v-btn value="pro">{{ t('register.pro') }}</v-btn>
     </v-btn-toggle>
-
-   
-
-    <v-text-field v-model="form.email" :label="t('register.email')" :rules="[rules.required, rules.email]" required />
-    <template v-if="props.mode !== 'pro-client'">
+    <v-text-field v-model="form.email" :label="t('register.email')" :rules="[rules.required, rules.email]" :disabled="props.mode === 'edit'" required />
+    <template v-if="props.mode !== 'pro-client' && props.mode !== 'edit'">
       <v-text-field v-model="form.password" :label="t('register.password')" type="password" :rules="[rules.required, rules.password]" required />
     </template>
     <template v-if="type === 'pro'">

@@ -16,6 +16,16 @@ const UserSchema = new mongoose.Schema({
   attachedBookings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Booking' }],
   registrationDate: { type: Date, default: Date.now },
   birthDate: { type: Date },
+  isVerified: { type: Boolean, default: false },
+  verificationCodeHash: { type: String },
+  verificationCodeExpiresAt: { type: Date },
+  verificationAttempts: { type: Number, default: 0 },
+  passwordRequestCodeHash: { type: String },
+  passwordResetExpiresAt : { type: Date },
+  passwordResetAttempts : { type: Number, default: 0 },
+  // Professional user fields
+  companyName: { type: String },
+  companyAddress: { type: String },
 });
 
 module.exports = mongoose.model('User', UserSchema);

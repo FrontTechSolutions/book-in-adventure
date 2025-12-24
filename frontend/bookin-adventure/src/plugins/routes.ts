@@ -12,6 +12,11 @@ export default [
     name: 'register',
     component: () => import('../views/RegisterView.vue')
   },
+  {
+    path: '/verify-account', //TODO renomver en otp
+    name: 'verify-account',
+    component: () => import('../views/AccountVerifyView.vue')
+  },  
   // {
   //   path: '/pro-dashboard',
   //   name: 'pro-dashboard',

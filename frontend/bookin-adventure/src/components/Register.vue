@@ -41,7 +41,7 @@ const onSubmit = async (formData: any, type: string) => {
   }
   await userStore.register(payload)
   if (!userStore.error) {
-    router.push('/')
+    router.push('/verify-account')
   } else {
     toastersStore.addToaster({
       title: t('toasters.register_error_title'),

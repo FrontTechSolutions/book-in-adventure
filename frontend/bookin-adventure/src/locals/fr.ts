@@ -105,6 +105,11 @@ export default {
       companyAddress: "Adresse de l'entreprise",
     }
   },
+  userPassword:{
+    title: "Mettre à jour mon mot de passe",
+    password: "Mot de passe",
+    edit: "Modifier mon mot de passe",
+  },
   dialogs:{
     profile_update:{
       title: "Mettre à jour mon profil",

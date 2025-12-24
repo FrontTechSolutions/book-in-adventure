@@ -2,6 +2,7 @@
 
 import { useI18n } from 'vue-i18n';
 import { useCommonStore } from '@/stores/common.store'; // Ajout de l'import du store
+import router from '@/plugins/router';
 const { t } = useI18n();
 
 const commonStore = useCommonStore(); // Initialisation du store
@@ -37,7 +38,7 @@ const openLoginDialog = () => {
           :value="index"
         >
           <v-list-item-title
-            @click="index === 0 ? openLoginDialog() : null"
+            @click="index === 0 ? openLoginDialog() : router.push('/register')"
           >
             {{ item.title }}
           </v-list-item-title>

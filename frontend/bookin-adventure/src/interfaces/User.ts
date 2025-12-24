@@ -14,4 +14,5 @@ export interface User {
   attachedBookings?: string[]
   registrationDate?: string
   birthDate: string
+  isVerified?: boolean
 }

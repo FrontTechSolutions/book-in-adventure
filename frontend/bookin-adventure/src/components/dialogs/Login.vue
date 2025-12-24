@@ -19,7 +19,7 @@ const password = ref('')
 
 function login() {
   // Ajoute ici la logique de connexion
-  userStore.login(email.value, password.value)
+  userStore.login({ email: email.value, password: password.value })
   open.value = false
 }
 </script>

@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const PaymentSchema = new mongoose.Schema({
   booking_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', required: true },

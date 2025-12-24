@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
@@ -23,9 +23,11 @@ const UserSchema = new mongoose.Schema({
   passwordRequestCodeHash: { type: String },
   passwordResetExpiresAt : { type: Date },
   passwordResetAttempts : { type: Number, default: 0 },
+  passwordIsVerified: { type: Boolean, default: false },
   // Professional user fields
   companyName: { type: String },
   companyAddress: { type: String },
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+export default User;

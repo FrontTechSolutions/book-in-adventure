@@ -1,3 +1,16 @@
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+
+export interface PasswordConfirmPayload {
+  currentPassword: string;
+  newPassword: string;
+  code: string;
+}
+
+
 export interface RegisterClientPayload {
   email: string
   password: string
@@ -18,6 +31,11 @@ export interface RegisterProPayload {
   companyName: string
   companyAddress: string
   birthDate?: string
+}
+
+export interface ConfirmationPayload {
+  email: string;
+  code: string;
 }
 
 export type RegisterPayload = RegisterClientPayload | RegisterProPayload

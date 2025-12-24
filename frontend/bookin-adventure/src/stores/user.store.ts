@@ -3,9 +3,7 @@ import { ref, type Ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { userService } from '@/services/user.service'
 import { type User } from '../interfaces/User'
-import { type RegisterPayload } from '../interfaces/payload/RegisterPayload'
-
-
+import type { RegisterPayload } from '@/interfaces/payload/UserPayloads'
 
 export const useUserStore = defineStore('user', () => {
   const user: Ref<User | undefined> = ref(undefined)
@@ -37,7 +35,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       const id = getUserId()
       if (!id) throw new Error('No user id')
-      const data = await userService.getUser(id, token.value)
+      const data = await userService.getUser(id)
       user.value = data.user
       return { user: user.value }
     } catch (err: any) {
@@ -71,7 +69,8 @@ export const useUserStore = defineStore('user', () => {
     loading.value = true
     error.value = undefined
     try {
-      const data = await userService.login(email, password)
+      const payload = { email, password }
+      const data = await userService.login(payload)
       user.value = data.user
       token.value = data.token
       if (token.value)
@@ -142,7 +141,8 @@ export const useUserStore = defineStore('user', () => {
       loading.value = true
       error.value = undefined
       try {
-        const response = await userService.verifyAccount(user.value?.email || '', code)
+        const payload = { email: user.value?.email || '', code }  
+        const response = await userService.verifyAccount(payload)
         response.user && (user.value = response.user)
         return response
       } catch (err: any) {
@@ -184,7 +184,8 @@ export const useUserStore = defineStore('user', () => {
       loading.value = true
       error.value = undefined
       try {
-        const response = await userService.passwordConfirmCode(email, code)
+        const payload = { email, code }
+        const response = await userService.passwordConfirmCode(payload)
         userOtpCode.value = response.code;
         return response;
       } catch (err: any) {

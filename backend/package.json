@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "Backend de la plateforme Book-in Adventure (Node.js, Express, MongoDB, Stripe)",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "start:prod": "cross-env APP_ENV=production node src/server.js",
-    "start:dev": "cross-env APP_ENV=development nodemon src/server.js",
+    "start:prod": "cross-env APP_ENV=production node dist/server.js",
+    "start:dev": "cross-env APP_ENV=development nodemon dist/server.js",
+    "tsc:watch": "tsc --watch",
+    "dev": "concurrently \"npm run tsc:watch\" \"npm run start:dev\"",
     "test": "vitest run"
   },
   "dependencies": {
@@ -19,9 +22,19 @@
     "stripe": "^12.18.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^25.0.3",
+    "@types/nodemailer": "^7.0.4",
+    "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "nodemon": "^3.0.3",
     "supertest": "^6.3.3",
+    "typescript": "^5.9.3",
     "vitest": "^1.0.0"
   },
   "engines": {

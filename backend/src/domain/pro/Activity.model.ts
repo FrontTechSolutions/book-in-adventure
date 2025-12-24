@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ActivitySchema = new mongoose.Schema({
   pro_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pro', required: true },

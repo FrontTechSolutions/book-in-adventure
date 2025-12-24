@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
@@ -9,7 +9,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendVerificationEmail(email, code) {
+
+export async function sendVerificationEmail(email: string, code: string): Promise<void> {
   await transporter.sendMail({
     from: '"Mon App" <no-reply@monapp.com>',
     to: email,
@@ -18,4 +19,3 @@ async function sendVerificationEmail(email, code) {
   });
 }
 
-module.exports = { sendVerificationEmail };

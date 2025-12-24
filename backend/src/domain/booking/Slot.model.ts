@@ -1,5 +1,5 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const SlotSchema = new mongoose.Schema({
   activity_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Activity', required: true },

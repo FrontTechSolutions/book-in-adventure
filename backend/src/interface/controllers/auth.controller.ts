@@ -9,18 +9,18 @@ import type { Request, Response } from 'express';
 // Utilitaire pour valider les champs requis selon le rôle
 function validateUserInput(body: any) {
   const errors: string[] = [];
-  if (!body.email) errors.push('Email requis');
-  if (!body.password) errors.push('Mot de passe requis');
-  if (!body.lastName) errors.push('Nom requis');
-  if (!body.firstName) errors.push('Prénom requis');
-  if (!body.role) errors.push('Rôle requis');
-  if (!['client', 'pro'].includes(body.role)) errors.push('Rôle invalide');
+  if (!body.email) errors.push('error.email_required');
+  if (!body.password) errors.push('error.password_required');
+  if (!body.lastName) errors.push('error.lastname_required');
+  if (!body.firstName) errors.push('error.firstname_required');
+  if (!body.role) errors.push('error.role_required');
+  if (!['client', 'pro'].includes(body.role)) errors.push('error.role_invalid');
 
   if (body.role === 'pro') {
-    if (!body.phone) errors.push('Téléphone requis');
-    if (!body.companyName) errors.push("Nom de l'entreprise requis");
-    if (!body.companyAddress) errors.push("Adresse de l'entreprise requise");
-    if (!body.activityDescription) errors.push("Description de l'activité requise");
+    if (!body.phone) errors.push('error.phone_required');
+    if (!body.companyName) errors.push('error.companyname_required');
+    if (!body.companyAddress) errors.push('error.companyaddress_required');
+    if (!body.activityDescription) errors.push('error.activitydescription_required');
   }
   return errors;
 }
@@ -52,7 +52,7 @@ const authController = {
 
       const existing = await User.findOne({ email });
       if (existing) {
-        return res.status(409).json({ error: 'Impossible de créer le compte' });
+        return res.status(409).json({ error: 'error.account_creation_failed' });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -93,11 +93,11 @@ const authController = {
       }
 
       const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'dev_secret', { expiresIn: '7d' });
-      res.status(201).json({ user: { id: user._id, email: user.email, role: user.role }, token, message: 'Compte créé. Vérifiez votre email pour activer le compte.', });
+      res.status(201).json({ user: { id: user._id, email: user.email, role: user.role }, token, message: 'success.account_created' });
 
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -113,11 +113,11 @@ const authController = {
       delete updateData.email;
       delete updateData.role;
       const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password');
-      if (!updatedUser) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      if (!updatedUser) return res.status(404).json({ error: 'error.user_not_found' });
       res.status(200).json({ user: updatedUser });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -128,21 +128,21 @@ const authController = {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(400).json({ error: 'Email et mot de passe requis' });
+        return res.status(400).json({ error: 'error.email_password_required' });
       }
 
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+        return res.status(401).json({ error: 'error.invalid_credentials' });
       }
 
       if (!user.isVerified) {
-        return res.status(403).json({ error: 'Compte non vérifié' });
+        return res.status(403).json({ error: 'error.account_not_verified' });
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+        return res.status(401).json({ error: 'error.invalid_credentials' });
       }
 
       const token = jwt.sign(
@@ -157,7 +157,7 @@ const authController = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -168,11 +168,11 @@ const authController = {
     try {
       const userId = req.params.id;
       const user = await User.findById(userId).select('-password');
-      if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      if (!user) return res.status(404).json({ error: 'error.user_not_found' });
       res.status(200).json({ user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone, isVerified: user.isVerified, birthDate: user.birthDate } });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -185,25 +185,25 @@ const authController = {
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur introuvable' });
+        return res.status(404).json({ error: 'error.user_not_found' });
       }
 
       if (user.isVerified) {
-        return res.status(400).json({ error: 'Compte déjà vérifié' });
+        return res.status(400).json({ error: 'error.account_already_verified' });
       }
 
       if (user.verificationAttempts >= 5) {
-        return res.status(429).json({ error: 'Trop de tentatives. Réessayez plus tard.' });
+        return res.status(429).json({ error: 'error.too_many_attempts' });
       }
 
       if (!user.verificationCodeExpiresAt || new Date(user.verificationCodeExpiresAt).getTime() < Date.now()) {
-        return res.status(400).json({ error: 'Code expiré' });
+        return res.status(400).json({ error: 'error.code_expired' });
       }
 
       if (hashCode(code) !== user.verificationCodeHash) {
         user.verificationAttempts += 1;
         await user.save();
-        return res.status(400).json({ error: 'Code invalide' });
+        return res.status(400).json({ error: 'error.code_invalid' });
       }
 
       user.isVerified = true;
@@ -212,10 +212,10 @@ const authController = {
       user.verificationAttempts = 0;
       await user.save();
 
-      res.json({ message: 'Compte vérifié avec succès', user: { id: user._id, email: user.email, role: user.role, isVerified: user.isVerified } });
+      res.json({ message: 'success.account_verified', user: { id: user._id, email: user.email, role: user.role, isVerified: user.isVerified } });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -226,7 +226,7 @@ const authController = {
     try {
       const { email } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+      if (!user) return res.status(404).json({ error: 'error.user_not_found' });
 
       const code = generateVerificationCode();
       user.passwordRequestCodeHash = hashCode(code);
@@ -237,10 +237,10 @@ const authController = {
       // À adapter selon ton service d'envoi d'email
       await sendVerificationEmail(email, code);
 
-      res.json({ message: 'Code envoyé' });
+      res.json({ message: 'success.code_sent' });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -249,19 +249,19 @@ const authController = {
     try {
       const { email, code } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+      if (!user) return res.status(404).json({ error: 'error.user_not_found' });
       if (!user.passwordResetExpiresAt || user.passwordResetExpiresAt.getTime() < Date.now()) {
-        return res.status(400).json({ error: 'Code expiré' });
+        return res.status(400).json({ error: 'error.code_expired' });
       }
       if (hashCode(code) !== user.passwordRequestCodeHash) {
-        return res.status(400).json({ error: 'Code invalide' });
+        return res.status(400).json({ error: 'error.code_invalid' });
       }
       user.passwordIsVerified = true;
       await user.save();
-      res.json({ success: true, code: code, message: 'Code valide' });
+      res.json({ success: true, code: code, message: 'success.code_valid' });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   },
 
@@ -279,11 +279,11 @@ const authController = {
       });
 
       if (!user)
-        return res.status(400).json({ error: 'Code invalide ou expiré' });
+        return res.status(400).json({ error: 'error.code_invalid_or_expired' });
 
       // Vérifier le nombre de tentatives
       if (user.passwordResetAttempts >= 5) {
-        return res.status(429).json({ error: 'Trop de tentatives. Réessayez plus tard.' });
+        return res.status(429).json({ error: 'error.too_many_attempts' });
       }
 
       // Vérifier le mot de passe actuel
@@ -291,7 +291,7 @@ const authController = {
       if (!passwordMatch) {
         user.passwordResetAttempts += 1;
         await user.save();
-        return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
+        return res.status(401).json({ error: 'error.current_password_incorrect' });
       }
 
       // Mettre à jour le mot de passe
@@ -305,10 +305,10 @@ const authController = {
 
       await user.save();
 
-      res.json({ success: true, message: 'Mot de passe mis à jour' });
+      res.json({ success: true, message: 'success.password_updated' });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'error.server' });
     }
   }
 };

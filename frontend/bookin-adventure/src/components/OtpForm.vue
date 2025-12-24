@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const formRefVerify = ref();
@@ -23,13 +23,6 @@ const genrateCode = async () => {
    await userStore.passwordRequestCode(userStore.user?.email)
 };
 
-onMounted(async () => {
-  // if(props.type === 'password' && userStore.user?.email){
-  //   genrateCode();
-  // }
-});
-
-
 const submit = async () => {
 if(props.type === 'account') {
     await handleAccountVerification();
@@ -51,7 +44,6 @@ const handleAccountVerification = async () => {
 
 const handlePasswordConfirmCode = async () => {
   const response = await userStore.passwordConfirmCode(userStore.user?.email || '', otp.value);
-  console.log('Response passwordConfirmCode:', response);
   if (response?.success) {
     // toto affiche le success et ouvre le dialog  
     commonStore.dialogs.passwordUpdate = true;

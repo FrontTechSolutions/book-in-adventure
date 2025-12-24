@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 import Dialogs from '@/components/dialogs/Dialogs.vue';
 import ToastersQueue from '@/components/toaster/ToastersQueue.vue';
-import { useToastersStore } from '@/stores/toasters';
+import { useToastersStore } from '@/stores/toasters.store';
 import Header from './components/header/Header.vue';
 import { useUserStore } from './stores/user.store';
 const toastersStore = useToastersStore();

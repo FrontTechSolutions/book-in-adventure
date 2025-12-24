@@ -20,6 +20,7 @@ const formRef = ref()
 const submit = async () => {
   const result = await formRef.value?.validate?.()
   if (!result || result.valid === false) return
+  console.log('Submitting form with data:', form.value, 'and type:', type.value)
   await props.onSubmit({ ...form.value }, type.value)
 }
 </script>

@@ -1,4 +1,5 @@
 
+import { warn } from 'vue'
 import { fr } from 'vuetify/locale'
 
 export default {
@@ -122,6 +123,52 @@ export default {
       submit: "Se connecter",
       cancel: "Annuler"
     }
+  },
+  backend: {
+    error: {
+      email_required: "Email requis",
+      password_required: "Mot de passe requis",
+      lastname_required: "Nom requis",
+      firstname_required: "Prénom requis",
+      role_required: "Rôle requis",
+      role_invalid: "Rôle invalide",
+      phone_required: "Téléphone requis",
+      companyname_required: "Nom de l'entreprise requis",
+      companyaddress_required: "Adresse de l'entreprise requise",
+      activitydescription_required: "Description de l'activité requise",
+      account_creation_failed: "Impossible de créer le compte",
+      server: "Erreur serveur",
+      user_not_found: "Utilisateur non trouvé",
+      email_password_required: "Email et mot de passe requis",
+      invalid_credentials: "Email ou mot de passe incorrect",
+      account_not_verified: "Compte non vérifié",
+      account_already_verified: "Compte déjà vérifié",
+      too_many_attempts: "Trop de tentatives. Réessayez plus tard.",
+      code_expired: "Code expiré",
+      code_invalid: "Code invalide",
+      code_invalid_or_expired: "Code invalide ou expiré",
+      current_password_incorrect: "Mot de passe actuel incorrect"
+    },
+    success: {
+      account_created: "Compte créé. Vérifiez votre email pour activer le compte.",
+      account_verified: "Compte vérifié avec succès",
+      code_sent: "Code envoyé",
+      code_valid: "Code valide",
+      password_updated: "Mot de passe mis à jour"
+    }
+  },
+  toasters:{
+    success: "Succès",
+    error: "Erreur",
+    warning: "Attention",
+    info: "Info",
+    content:{
+      register_success: "Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.",
+      error:{
+        common: "Une erreur est survenue. Veuillez réessayer plus tard."
+      }
+    },
+
   }
 }
 

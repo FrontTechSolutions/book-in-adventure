@@ -3,7 +3,8 @@ import { ref, type Ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { userService } from '@/services/user.service'
 import { type User } from '../interfaces/User'
-import type { RegisterPayload } from '@/interfaces/payload/UserPayloads'
+import type { ConfirmationPayload, LoginPayload, PasswordConfirmPayload, RegisterPayload } from '@/interfaces/payload/UserPayloads'
+import type { GetUserResponse, LoginResponse, PasswordConfirmCodeResponse, PasswordConfirmResponse, PasswordRequestCodeResponse, RegisterResponse, UpdateResponse, VerifyAccountResponse } from '@/interfaces/payload/UserResponses'
 
 export const useUserStore = defineStore('user', () => {
   const user: Ref<User | undefined> = ref(undefined)
@@ -12,90 +13,8 @@ export const useUserStore = defineStore('user', () => {
   const error = ref<string | undefined>(undefined)
   const userOtpCode = ref<string | null>(null)
 
-  const register = async (payload: RegisterPayload) => {
-    loading.value = true
-    error.value = undefined
-    try {
-      const data = await userService.register(payload)
-      user.value = data.user
-      token.value = data.token
-      console.log('Registered user:', user.value)
-      if (token.value)
-        localStorage.setItem('token', token.value)
-    } catch (err: any) {
-      error.value = err.response?.data?.error || err.message || 'error.register_failed'
-    } finally {
-      loading.value = false
-    }
-  }
 
-  const loadUser = async (): Promise<{ user: User | undefined } | undefined> => {
-    if (!token.value) return undefined
-    loading.value = true
-    try {
-      const id = getUserId()
-      if (!id) throw new Error('No user id')
-      const data = await userService.getUser(id)
-      user.value = data.user
-      return { user: user.value }
-    } catch (err: any) {
-      error.value = err.response?.data?.error || err.message || 'error.load_user_failed'
-      return { user: undefined }
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const update = async (payload: RegisterPayload) => {
-    loading.value = true
-    error.value = undefined
-    try {
-      const id = getUserId()
-      if (!id) throw new Error('No user id')
-      const data = await userService.update(id, payload)
-      user.value = data.user
-      token.value = data.token
-      console.log('Registered user:', user.value)
-      if (token.value)
-        localStorage.setItem('token', token.value)
-    } catch (err: any) {
-      error.value = err.response?.data?.error || err.message || 'error.register_failed'
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const login = async (email: string, password: string) => {
-    loading.value = true
-    error.value = undefined
-    try {
-      const payload = { email, password }
-      const data = await userService.login(payload)
-      user.value = data.user
-      token.value = data.token
-      if (token.value)
-        localStorage.setItem('token', token.value)
-    } catch (err: any) {
-      error.value = err.response?.data?.error || err.message || 'error.login_failed'
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const logout = () => {
-    user.value = undefined
-    token.value = null
-    localStorage.removeItem('token')
-  }
-
-  const loadFromStorage = () => {
-    const t = localStorage.getItem('token')
-    if (t) {
-      token.value = t
-    }
-  }
-
-
+  //getters  
   const userRole = computed(() => {
     if (!token.value) return null
     try {
@@ -107,6 +26,13 @@ export const useUserStore = defineStore('user', () => {
       return null
     }
   })
+
+  const loadFromStorage = () => {
+    const t = localStorage.getItem('token')
+    if (t) {
+      token.value = t
+    }
+  }
 
   // Getter pour obtenir le rôle (string ou null)
   const getRole = (): string | null =>   {
@@ -137,59 +63,141 @@ export const useUserStore = defineStore('user', () => {
     }  
 
 
-    const verifyAccount = async (code: string) => {
+  //actions
+  const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
+    loading.value = true
+    error.value = undefined
+    try {
+      const data: RegisterResponse = await userService.register(payload)
+      user.value = data.user
+      token.value = data.token
+      if (token.value)
+        localStorage.setItem('token', token.value)
+      return data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'error.register_failed'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const loadUser = async (): Promise<{ user: GetUserResponse } | undefined> => {
+    loading.value = true
+    try {
+      const id = getUserId()
+      if (!id) throw new Error('No user id')
+      const data = await userService.getUser(id)
+      user.value = data.user
+      return { user: data }
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'error.load_user_failed'
+      return undefined
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const update = async (payload: RegisterPayload): Promise<UpdateResponse> => {
+    loading.value = true
+    error.value = undefined
+    try {
+      const id = getUserId()
+      if (!id) throw new Error('No user id')
+      const data: UpdateResponse = await userService.update(id, payload)
+      user.value = data.user
+      token.value = data.token
+      if (token.value)
+        localStorage.setItem('token', token.value)
+      return data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'error.register_failed'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const login = async (payload: LoginPayload): Promise<LoginResponse> => {
+    loading.value = true
+    error.value = undefined
+    try {
+      const data: LoginResponse = await userService.login(payload)
+      user.value = data.user
+      token.value = data.token
+      if (token.value)
+        localStorage.setItem('token', token.value)
+      return data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'error.login_failed'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const logout = () => {
+    user.value = undefined
+    token.value = null
+    localStorage.removeItem('token')
+  }
+
+    const verifyAccount = async (code: string): Promise<VerifyAccountResponse | undefined> => {
       loading.value = true
       error.value = undefined
       try {
         const payload = { email: user.value?.email || '', code }  
-        const response = await userService.verifyAccount(payload)
+        const response:VerifyAccountResponse = await userService.verifyAccount(payload)
         response.user && (user.value = response.user)
         return response
       } catch (err: any) {
         error.value = err.response?.data?.error || err.message || 'error.verify_account_failed'
+        return undefined
       } finally {
         loading.value = false
       }
     }
 
-    const passwordRequestCode = async (email: string) => {
+    const passwordRequestCode = async (email: string): Promise<PasswordRequestCodeResponse> => {
       loading.value = true
       error.value = undefined
       try {
-        await userService.passwordRequestCode(email)
+        const response: PasswordRequestCodeResponse = await userService.passwordRequestCode(email)
+        return response
       } catch (err: any) {
         error.value = err.response?.data?.error || err.message || 'error.request_password_reset_failed'
+        throw err
       } finally {
         loading.value = false
       }
     }    
 
-    const passwordConfirm = async (currentPassword: string, newPassword: string) => {
-      console.log('Password confirm called with OTP code:', userOtpCode.value);
-      console.log('Current Password:', currentPassword);
-      console.log('New Password:', newPassword);
+    const passwordConfirm = async (currentPassword: string, newPassword: string): Promise<PasswordConfirmResponse> => {
       loading.value = true
       error.value = undefined
       try {
-        const response = await userService.passwordConfirm({ currentPassword, newPassword, code: userOtpCode.value || '' })
+        const payload:PasswordConfirmPayload = { currentPassword, newPassword, code: userOtpCode.value || '' }
+        const response = await userService.passwordConfirm(payload)
         return response
       } catch (err: any) {
         error.value = err.response?.data?.error || err.message || 'error.confirm_password_reset_failed'
+        throw err
       } finally {
         loading.value = false
       }
     }
 
-    const passwordConfirmCode = async (email: string, code: string) => {
+    const passwordConfirmCode = async (email: string, code: string): Promise<PasswordConfirmCodeResponse | undefined> => {
       loading.value = true
       error.value = undefined
       try {
-        const payload = { email, code }
+        const payload: ConfirmationPayload = { email, code }
         const response = await userService.passwordConfirmCode(payload)
         userOtpCode.value = response.code;
         return response;
       } catch (err: any) {
         error.value = err.response?.data?.error || err.message || 'error.confirm_password_reset_code_failed'
+        return undefined;
       } finally {
         loading.value = false
       }

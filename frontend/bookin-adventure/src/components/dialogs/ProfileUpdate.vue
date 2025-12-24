@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user.store'
 import { useI18n } from 'vue-i18n'
 import UserForm from '@/components/UserForm.vue'
 import type { RegisterPayload } from '@/interfaces/payload/RegisterPayload'
-import { useToastersStore } from '@/stores/toasters'
+import { useToastersStore } from '@/stores/toasters.store'
 import { ToasterLevel } from '@/interfaces/ToasterLevel'
 import { computed } from 'vue'
 const { t } = useI18n()

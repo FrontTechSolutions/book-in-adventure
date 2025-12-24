@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useActivityStore } from '../stores/activity.store';
 import { useI18n } from 'vue-i18n';
-import { useToastersStore } from '@/stores/toasters';
+import { useToastersStore } from '@/stores/toasters.store';
 import { ToasterLevel } from '@/interfaces/ToasterLevel';
 
 const valid = ref(false);

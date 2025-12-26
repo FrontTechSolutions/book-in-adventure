@@ -3,9 +3,12 @@ import { computed, ref } from 'vue'
 import { useCommonStore } from '@/stores/common.store'
 import { useUserStore } from '@/stores/user.store'
 import { useI18n } from 'vue-i18n'
+import { ToasterLevel } from '@/interfaces/ToasterLevel'
+import { useToastersStore } from '@/stores/toasters.store'
 const { t } = useI18n()
 const commonStore = useCommonStore()
 const userStore = useUserStore()
+const toastersStore = useToastersStore()
 
 const open = computed({
   get: () => commonStore.dialogs.login,
@@ -17,10 +20,26 @@ const open = computed({
 const email = ref('')
 const password = ref('')
 
-function login() {
-  // Ajoute ici la logique de connexion
-  userStore.login({ email: email.value, password: password.value })
-  open.value = false
+const login = async () => {
+  try {
+    await userStore.login({ email: email.value, password: password.value })
+    open.value = false
+    toastersStore.addToaster({
+      title: t('toasters.success'),
+      content: t('toasters.content.login_success'),
+      level: ToasterLevel.SUCCESS,
+      lifeTime: 10,
+      showMoreInfoButton: false,
+    })    
+  } catch (err:any) {
+    toastersStore.addToaster({
+      title: t('toasters.error'),
+      content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
+      level: ToasterLevel.ERROR,
+      lifeTime: 10,
+      showMoreInfoButton: false,
+    })
+  }
 }
 </script>
 

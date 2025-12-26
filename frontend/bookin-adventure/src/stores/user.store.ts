@@ -121,7 +121,6 @@ export const useUserStore = defineStore('user', () => {
   const login = async (payload: LoginPayload): Promise<LoginResponse> => {
     loading.value = true
     error.value = undefined
-    console.log('Attempting login with payload:', payload)
     try {
       const data: LoginResponse = await userService.login(payload)
       user.value = data.user

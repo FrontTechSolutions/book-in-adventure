@@ -11,7 +11,7 @@ const userStore = useUserStore();
 const commonStore = useCommonStore();
 const userProfile = computed<User | undefined>(() => userStore.user ?? undefined);
 const role = userStore.getRole();    
-onMounted(async () => {
+onMounted(async () => { //TODO mettre dans un try catch avec toaster
     await userStore.loadUser();
 });
 </script>
@@ -32,7 +32,7 @@ onMounted(async () => {
             </v-sheet> -->            
         </v-card-text>
         <v-card-actions>
-            <v-btn @click="commonStore.dialogs.profileUpdate = true" color="primary">
+            <v-btn @click="$emit('edit', true)" color="primary">
                 {{ t('userProfile.edit') }}
             </v-btn>
         </v-card-actions>

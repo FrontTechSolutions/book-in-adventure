@@ -155,6 +155,7 @@ export default {
       code_sent: "Code envoyé",
       code_valid: "Code valide",
       password_updated: "Mot de passe mis à jour"
+      
     }
   },
   toasters:{
@@ -164,6 +165,9 @@ export default {
     info: "Info",
     content:{
       register_success: "Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.",
+      login_success: "Connexion réussie ! Bienvenue.",
+      profile_update_success: "Profil mis à jour avec succès.",
+      password_update_success: "Mot de passe mis à jour avec succès.",
       error:{
         common: "Une erreur est survenue. Veuillez réessayer plus tard."
       }

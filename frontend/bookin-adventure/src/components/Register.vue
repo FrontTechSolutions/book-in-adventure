@@ -51,9 +51,6 @@ const onSubmit = async (formData: any, type: string) => {
       router.push('/verify-account')
     }
   } catch (err: any) {
-    console.log('Registration error:', err)
-    console.log('Error message:', err?.message)
-    console.log('Error response:', err?.response.data.error)
     toastersStore.addToaster({
       title: t('toasters.error'),
       content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),

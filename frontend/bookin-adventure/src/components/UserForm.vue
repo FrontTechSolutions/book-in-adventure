@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserForm } from '@/composables/useUserForm'
 import type { User } from '@/interfaces/User';
+import { formatISO, parse, format, parseISO } from 'date-fns';
 
 
 const props = defineProps<{
@@ -15,12 +16,34 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const { type, form, rules } = useUserForm(props.initial)
+console.log('form.value.birthDate:', form.value.birthDate)
+
+
 const formRef = ref()
+
+// birthDate affichée au format dd/MM/yyyy
+const birthDateDisplay = ref('');
+if (form.value.birthDate) {
+  if (/^\d{4}-\d{2}-\d{2}T/.test(form.value.birthDate)) {
+    birthDateDisplay.value = format(parseISO(form.value.birthDate), 'dd/MM/yyyy');
+  } else {
+    birthDateDisplay.value = form.value.birthDate;
+  }
+}
+
+function onBirthDateInput(val: string) {
+  birthDateDisplay.value = val;
+  // Met à jour form.value.birthDate en ISO pour le backend
+  if (val) {
+    form.value.birthDate = formatISO(parse(val, 'dd/MM/yyyy', new Date()));
+  } else {
+    form.value.birthDate = undefined;
+  }
+}
 
 const submit = async () => {
   const result = await formRef.value?.validate?.()
   if (!result || result.valid === false) return
-  console.log('Submitting form with data:', form.value, 'and type:', type.value)
   await props.onSubmit({ ...form.value }, type.value)
 }
 </script>
@@ -44,15 +67,19 @@ const submit = async () => {
       <v-text-field v-model="form.firstName" :label="t('register.firstName')" :rules="[rules.required, rules.name]" required />
     </template>
     <v-text-field v-model="form.phone" :label="t('register.phone')" :rules="[rules.required]" required />
-    <v-text-field v-model="form.birthDate" :label="t('register.birthDate')" type="date" :rules="[rules.required, rules.birthDate]" required />
+    <v-text-field
+      v-model="birthDateDisplay"
+      :label="t('register.birthDate')"
+      :rules="[rules.required, rules.birthDate]"
+      required
+      @update:modelValue="onBirthDateInput"
+    />
     <template v-if="type === 'pro'">
       <v-text-field v-model="form.companyName" :label="t('register.companyName')" :rules="[rules.required]" required />
       <v-text-field v-model="form.companyAddress" :label="t('register.companyAddress')" :rules="[rules.required]" required />
     </template>
     <!-- <v-alert v-if="props.error" type="error" class="mt-2">{{ props.error }}</v-alert> -->
-    <slot name="actions">
-
-    </slot>
+    <slot name="actions" />
   </v-form>
 </template>
 

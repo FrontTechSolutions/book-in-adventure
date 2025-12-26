@@ -25,6 +25,7 @@ const onSubmit = async (formData: any, type: string) => {
   const payload = buildRegisterPayload(formData, type);
   try {
     await userStore.update(payload);
+    emit('close');
     toastersStore.addToaster({
       title: t('toasters.success'),
       content: t('toasters.content.profile_update_success'),

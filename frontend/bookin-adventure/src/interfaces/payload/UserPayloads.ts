@@ -37,5 +37,14 @@ export interface ConfirmationPayload {
   email: string;
   code: string;
 }
+export interface EmailRequestPayload {
+  newEmail: string;
+  password: string;
+}
+
+export interface EmailConfirmPayload {
+  email: string;
+  code: string;
+}
 
 export type RegisterPayload = RegisterClientPayload | RegisterProPayload

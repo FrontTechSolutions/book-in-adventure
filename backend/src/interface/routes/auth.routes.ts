@@ -12,5 +12,7 @@ router.post('/verify-account', authController.verifyAccount);
 router.post('/password-request/code', authController.passwordRequestCode);
 router.post('/password-confirm/code', authController.passwordConfirmCode);
 router.post('/password-confirm', authController.passwordConfirm);
+router.post('/email-request', authController.emailRequest);
+router.post('/email-confirm/code', authController.emailConfirmCode);
 
 export default router;

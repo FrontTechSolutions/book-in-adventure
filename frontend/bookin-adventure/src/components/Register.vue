@@ -28,8 +28,8 @@ const onSubmit = async (formData: any, type: string) => {
     })    
   } catch (err:any) {
     toastersStore.addToaster({
-      title: t('toasters.register_error_title'),
-       content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
+      title: t('toasters.error'),
+       content: t('backend.' + err?.response.data.error)  || t('toasters..errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: false,
@@ -79,7 +79,7 @@ const onSubmit = async (formData: any, type: string) => {
 //   } catch (err: any) {
 //     toastersStore.addToaster({
 //       title: t('toasters.error'),
-//       content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
+//       content: t('backend.' + err?.response.data.error)  || t('toasters..errorCommon'),
 //       level: ToasterLevel.ERROR,
 //       lifeTime: 10,
 //       showMoreInfoButton: true,

@@ -3,8 +3,8 @@ import { ref, type Ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { userService } from '@/services/user.service'
 import { type User } from '../interfaces/User'
-import type { ConfirmationPayload, LoginPayload, PasswordConfirmPayload, RegisterPayload } from '@/interfaces/payload/UserPayloads'
-import type { GetUserResponse, LoginResponse, PasswordConfirmCodeResponse, PasswordConfirmResponse, PasswordRequestCodeResponse, RegisterResponse, UpdateResponse, VerifyAccountResponse } from '@/interfaces/payload/UserResponses'
+import type { ConfirmationPayload, EmailConfirmPayload, EmailRequestPayload, LoginPayload, PasswordConfirmPayload, RegisterPayload } from '@/interfaces/payload/UserPayloads'
+import type { EmailConfirmResponse, EmailRequestResponse, GetUserResponse, LoginResponse, PasswordConfirmCodeResponse, PasswordConfirmResponse, PasswordRequestCodeResponse, RegisterResponse, UpdateResponse, VerifyAccountResponse } from '@/interfaces/payload/UserResponses'
 
 export const useUserStore = defineStore('user', () => {
   const user: Ref<User | undefined> = ref(undefined)
@@ -204,6 +204,44 @@ export const useUserStore = defineStore('user', () => {
       }
     }
 
+    const emailRequest = async (newEmail: string, password: string): Promise<EmailRequestResponse> => {
+      loading.value = true
+      error.value = undefined
+      try {
+        const payload: EmailRequestPayload = { newEmail, password }
+        const response: EmailRequestResponse = await userService.emailRequest(payload)
+        return response
+      } catch (err: any) {
+        error.value = err.response?.data?.error || err.message || 'error.email_request_failed'
+        throw err
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const emailConfirmCode = async (code: string): Promise<EmailConfirmResponse | undefined> => {
+      loading.value = true
+      error.value = undefined
+      try {
+        const payload: EmailConfirmPayload = { email: user.value?.email || '', code }
+        const response = await userService.emailConfirmCode(payload)
+        if(response.user && user.value){
+          user.value.email = response.user.email
+          user.value._id = response.user._id
+          if (response.user.role === "client" || response.user.role === "pro") {
+            user.value.role = response.user.role
+          }
+          user.value.isVerified = response.user.isVerified
+        }
+        return response
+      } catch (err: any) {
+        error.value = err.response?.data?.error || err.message || 'error.confirm_email_code_failed'
+        return undefined
+      } finally {
+        loading.value = false
+      }
+    }
+
 
 
 
@@ -228,5 +266,7 @@ export const useUserStore = defineStore('user', () => {
     passwordRequestCode,
     passwordConfirmCode,
     passwordConfirm,
+    emailRequest,
+    emailConfirmCode
   }
 })

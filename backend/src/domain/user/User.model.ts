@@ -24,6 +24,10 @@ const UserSchema = new mongoose.Schema({
   passwordResetExpiresAt : { type: Date },
   passwordResetAttempts : { type: Number, default: 0 },
   passwordIsVerified: { type: Boolean, default: false },
+  emailRequestCodeHash: { type: String },
+  emailRequestExpiresAt : { type: Date },
+  emailRequestAttempts : { type: Number, default: 0 },
+  emailRequestNewEmail: { type: String },
   // Professional user fields
   companyName: { type: String },
   companyAddress: { type: String },

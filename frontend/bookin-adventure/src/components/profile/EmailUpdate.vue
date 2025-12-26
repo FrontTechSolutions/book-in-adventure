@@ -14,21 +14,20 @@ const userStore = useUserStore();
 const toastersStore = useToastersStore();
 
 // Ajoute ces variables pour lier les champs
-const currentPassword = ref('');
-const newPassword = ref('');
-const confirmNewPassword = ref('');
+const password = ref('');
+const newEmail = ref('');
 
 const submit = async () => {
     try {
-        const response = await userStore.passwordConfirm(currentPassword.value, newPassword.value);
+        const response = await userStore.emailRequest(newEmail.value, password.value, );
         if (response?.success) {
-            router.push({ name: 'client-profile', query: { showPasswordUpdate: 'false' } });
+            router.push({ path: '/verify-account', query: { verificationType: 'email' } });
             toastersStore.addToaster({
-            title: t('toasters.success'),
-            content: t('toasters.content.password_update_success'),
-            level: ToasterLevel.SUCCESS,
-            lifeTime: 10,
-            showMoreInfoButton: false,
+                title: t('toasters.info'),
+                content: t('toasters.content.email_request_asked'),
+                level: ToasterLevel.INFO,
+                lifeTime: 10,
+                showMoreInfoButton: false,
             })             
         }        
     } catch (err: any) {
@@ -50,30 +49,25 @@ const cancel = () => {
 <template>
 
 <v-card class="ma-4">
-    <v-card-title>{{ t('userPasswordUpdate.title') }}</v-card-title>
+    <v-card-title>{{ t('userEmailUpdate.title') }}</v-card-title>
     <v-card-text>
-    <v-form ref="formRefPassword" @submit.prevent="submit">
+    <v-form ref="formRefEmail" @submit.prevent="submit">
+        <v-text-field
+            label="New Email"
+            type="email"
+            v-model="newEmail"
+            required/>
         <v-text-field
             label="Current Password"
             type="password"
-            v-model="currentPassword"
-            required/>
-        <v-text-field
-            label="New Password"
-            type="password"
-            v-model="newPassword"
-            required/>
-        <v-text-field
-            label="Confirm New Password"
-            type="password"
-            v-model="confirmNewPassword"
-            required/>
+            v-model="password"
+            required/>            
     </v-form>
     </v-card-text>
     <v-card-actions>
         <v-spacer></v-spacer>       
-        <v-btn :loading="false" color="primary" @click="submit">{{ t('userPasswordUpdate.submit') }}</v-btn>
-        <v-btn @click="cancel">{{ t('userPasswordUpdate.cancel') }}</v-btn>
+        <v-btn :loading="false" color="primary" @click="submit">{{ t('userEmailUpdate.submit') }}</v-btn>
+        <v-btn @click="cancel">{{ t('userEmailUpdate.cancel') }}</v-btn>
     </v-card-actions>
 </v-card>
 

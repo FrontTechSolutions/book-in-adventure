@@ -34,7 +34,7 @@ const login = async () => {
   } catch (err:any) {
     toastersStore.addToaster({
       title: t('toasters.error'),
-      content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
+      content: t('backend.' + err?.response.data.error)  || t('toasters..errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: false,

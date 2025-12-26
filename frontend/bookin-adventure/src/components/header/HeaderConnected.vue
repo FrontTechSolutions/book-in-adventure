@@ -2,6 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LogoutMenu from './LogoutMenu.vue'
+import HeaderTitle from './HeaderTitle.vue'
 import { useUserStore } from '@/stores/user.store'
 import router from '@/plugins/router'
 
@@ -35,8 +36,8 @@ watch(group, () => {
 <template>
       <v-app-bar color="primary">
         <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>{{ t('App.title') }}</v-toolbar-title>
-        <LogoutMenu />
+        <HeaderTitle />
+        <LogoutMenu v-if="userStore.isLoggedIn" />
       </v-app-bar>
 
       <v-navigation-drawer

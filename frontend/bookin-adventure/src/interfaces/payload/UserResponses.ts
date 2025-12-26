@@ -39,3 +39,21 @@ export interface PasswordConfirmResponse {
   success: boolean;
   message: string;
 }
+
+export interface EmailRequestResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface EmailConfirmResponse {
+  success: boolean;
+  message: string;
+  user: {
+    email: string;
+    _id: string;
+    role: string;
+    isVerified: boolean;
+  }
+}
+
+

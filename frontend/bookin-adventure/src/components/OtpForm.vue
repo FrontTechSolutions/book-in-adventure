@@ -18,7 +18,7 @@ const otp = ref('');
 const OTP_LENGTH = 6; // adapte selon ton besoin
 
 const props = defineProps<{
-  type: 'password' | 'account';
+  type: 'password' | 'account' | 'email';
 }>();
 
 
@@ -32,6 +32,8 @@ if(props.type === 'account') {
     await handleAccountVerification();
   } else if (props.type === 'password') {
     await handlePasswordConfirmCode();
+  } else if (props.type === 'email') {
+    // TODO handle email verification
   }
 };
 
@@ -51,7 +53,7 @@ const handleAccountVerification = async () => {
   } catch (err: any) {
     toastersStore.addToaster({
       title: t('toasters.error'),
-      content: userStore.error || t('toasters.content.error.common'),
+      content: userStore.error || t('toasters..errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: true,
@@ -75,7 +77,7 @@ const handlePasswordConfirmCode = async () => {
   } catch (err: any) {
     toastersStore.addToaster({
       title: t('toasters.error'),
-      content: userStore.error || t('toasters.content.error.common'),
+      content: userStore.error || t('toasters..errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: true,
@@ -84,7 +86,29 @@ const handlePasswordConfirmCode = async () => {
 };
 
 
-
+const handleEmailConfirmCode = async () => {
+  try {
+    const response = await userStore.emailConfirmCode(otp.value);
+    if (response?.success) {
+      router.push('/client-profile');
+      toastersStore.addToaster({
+        title: t('toasters.success'),
+        content: t('toasters.content.email_update_success'),
+        level: ToasterLevel.SUCCESS,
+        lifeTime: 10,
+        showMoreInfoButton: false,
+      })       
+    } 
+  } catch (err: any) {
+    toastersStore.addToaster({
+      title: t('toasters.error'),
+      content: userStore.error || t('toasters..errorCommon'),
+      level: ToasterLevel.ERROR,
+      lifeTime: 10,
+      showMoreInfoButton: true,
+    });
+  }
+};
 
 
 const cancel = () => {

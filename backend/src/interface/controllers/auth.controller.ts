@@ -310,7 +310,122 @@ const authController = {
       console.error(err);
       res.status(500).json({ error: 'error.server' });
     }
-  }
+  },
+
+  emailRequest: async (req: any, res: any) => {
+    try {
+      const { newEmail, password } = req.body;
+      const userId = req.user.id;
+
+      console.log('Email change request for user req.body:',req.body);
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'error.invalid_credentials' });
+      }
+
+      // Vérifier que l'email n'est pas déjà utilisé
+      const emailExists = await User.findOne({ email: newEmail });
+      if (emailExists) {
+        return res.status(409).json({ error: 'error.email_already_used' });
+      }
+
+      const code = generateVerificationCode();
+
+      user.emailRequestNewEmail = newEmail;
+      user.emailRequestCodeHash = hashCode(code);
+      user.emailRequestExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+      user.emailRequestAttempts = 0;
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: 'success.code_sent',
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'error.server' });
+    }
+  },
+
+  emailConfirmCode: async (req: any, res: any) => {
+    try {
+      const { code } = req.body;
+      const userId = req.user.id;
+      console.log('Email change confirm for user userId:', userId);
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+
+      // Vérifier qu'une demande existe
+      if (
+        !user.emailRequestNewEmail ||
+        !user.emailRequestCodeHash ||
+        !user.emailRequestExpiresAt
+      ) {
+        return res.status(400).json({ error: 'error.no_email_request' });
+      }
+
+      // Vérifier expiration
+      if (user.emailRequestExpiresAt.getTime() < Date.now()) {
+        return res.status(400).json({ error: 'error.code_expired' });
+      }
+
+      // Vérifier le code
+      if (hashCode(code) !== user.emailRequestCodeHash) {
+        user.emailRequestAttempts += 1;
+
+        // Trop de tentatives → on invalide tout
+        if (user.emailRequestAttempts >= 5) {
+          user.emailRequestCodeHash = '';
+          user.emailRequestExpiresAt = new Date(0);
+          user.emailRequestNewEmail = '';
+          user.emailRequestAttempts = 0;
+        }
+
+        await user.save();
+        return res.status(400).json({ error: 'error.code_invalid' });
+      }
+
+      // Vérifier à nouveau que l'email n'est pas déjà pris (race condition)
+      const emailExists = await User.findOne({
+        email: user.emailRequestNewEmail,
+      });
+      if (emailExists) {
+        return res.status(409).json({ error: 'error.email_already_used' });
+      }
+
+      // Appliquer le changement d'email
+      user.email = user.emailRequestNewEmail;
+
+      // Nettoyage
+      user.emailRequestNewEmail = '';
+      user.emailRequestCodeHash = '';
+      user.emailRequestExpiresAt = new Date(0);
+      user.emailRequestAttempts = 0;
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: 'success.email_updated',
+        user: { id: user._id, email: user.email, role: user.role, isVerified: user.isVerified }
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'error.server' });
+    }
+  },
+
+
 };
 
 export default authController;

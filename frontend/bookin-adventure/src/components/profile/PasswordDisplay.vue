@@ -15,15 +15,10 @@ const updatePassword = async () => {
 }
 </script>
 <template>
-        <v-card class="ma-4">
+    <v-card class="ma-4">
         <v-card-title>{{ t('userPassword.title') }}</v-card-title>
         <v-card-text>
-            <p>{{ t('userPassword.password') }} : ******</p>
-            <!-- <v-sheet v-if="role === 'pro'">
-                <p v-if="userProfile?.birthDate">{{ t('userProfile.fields.birthDate') }} : {{ userProfile?.birthDate }}</p>
-                <p v-if="userProfile?.companyName">{{ t('userProfile.fields.companyName') }} : {{ userProfile?.companyName }}</p>
-                <p v-if="userProfile?.companyAddress">{{ t('userProfile.fields.companyAddress') }} : {{ userProfile?.companyAddress }}</p>
-            </v-sheet> -->            
+            <p>{{ t('userPassword.password') }} : ******</p>          
         </v-card-text>
         <v-card-actions>
             <v-btn @click="updatePassword" color="primary">

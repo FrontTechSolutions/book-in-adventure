@@ -117,14 +117,25 @@ export default {
     submit: "Modifier mon mot de passe",
     cancel: "Annuler"
   },
+  userEmailUpdate:{
+    title: "Mettre à jour mon email",
+    email: "Email",
+    password: "Mot de passe",
+    submit: "Modifier mon email",
+    cancel: "Annuler"
+  },
   userPassword:{
     title: "Mettre à jour mon mot de passe",
     password: "Mot de passe",
     edit: "Modifier mon mot de passe",
     cancel: "Annuler"
   },  
+  userEmail:{
+    title: "Mettre à jour mon email",
+    email: "Email",
+    edit: "Modifier mon email"
+  },
   dialogs:{
-
     login:{
       title: "Connexion",
       email: "Email",
@@ -156,14 +167,17 @@ export default {
       code_expired: "Code expiré",
       code_invalid: "Code invalide",
       code_invalid_or_expired: "Code invalide ou expiré",
-      current_password_incorrect: "Mot de passe actuel incorrect"
+      current_password_incorrect: "Mot de passe actuel incorrect",
+      no_email_request : "Aucune demande de changement d'email en cours.",
+      email_already_used : "L'email est déjà utilisé par un autre compte."
     },
     success: {
       account_created: "Compte créé. Vérifiez votre email pour activer le compte.",
       account_verified: "Compte vérifié avec succès",
       code_sent: "Code envoyé",
       code_valid: "Code valide",
-      password_updated: "Mot de passe mis à jour"
+      password_updated: "Mot de passe mis à jour",
+      email_updated : "Votre adresse email a été mise à jour avec succès."
       
     }
   },
@@ -178,12 +192,15 @@ export default {
       profile_update_success: "Profil mis à jour avec succès.",
       password_update_success: "Mot de passe mis à jour avec succès.",
       password_update_code_success: "Code de réinitialisation du mot de passe vérifié avec succès.",
-      error:{
-        common: "Une erreur est survenue. Veuillez réessayer plus tard."
-      }
+      email_update_success: "Adresse email mise à jour avec succès.",
+      email_request_asked: "Demande de changement d'email envoyée. Vérifiez votre boîte de réception."
     },
+    errorCommon:{
+      common: "Une erreur est survenue. Veuillez réessayer plus tard."
+    }
+  },
 
-  }
+  
 }
 
 

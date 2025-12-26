@@ -1,6 +1,6 @@
 
 
-import type { RegisterPayload, LoginPayload, PasswordConfirmPayload, ConfirmationPayload } from '@/interfaces/payload/UserPayloads'
+import type { RegisterPayload, LoginPayload, PasswordConfirmPayload, ConfirmationPayload, EmailConfirmPayload, EmailRequestPayload } from '@/interfaces/payload/UserPayloads'
 import type {
   RegisterResponse,
   UpdateResponse,
@@ -9,7 +9,8 @@ import type {
   VerifyAccountResponse,
   PasswordRequestCodeResponse,
   PasswordConfirmCodeResponse,
-  PasswordConfirmResponse
+  PasswordConfirmResponse,
+  EmailConfirmResponse
 } from '@/interfaces/payload/UserResponses'
 import { apiService } from './api.service';
 
@@ -43,6 +44,14 @@ export const userService = {
   passwordConfirm: async (payload: PasswordConfirmPayload) => {
     return await apiService.post<PasswordConfirmResponse>(`/auth/password-confirm`, payload, getAuthHeaders())
   },
+  emailRequest: async (payload: EmailRequestPayload) => {
+    console.log('Sending email request with payload:', payload);
+    console.log('Auth headers:', getAuthHeaders());
+    return await apiService.post<EmailConfirmResponse>('/auth/email-request', payload, getAuthHeaders())
+  },
+  emailConfirmCode: async (payload: EmailConfirmPayload) => {
+    return await apiService.post<EmailConfirmResponse>('/auth/email-confirm/code', payload, getAuthHeaders())
+  }
 
 
 

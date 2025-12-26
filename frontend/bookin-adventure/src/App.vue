@@ -21,7 +21,7 @@ onMounted(() => {
         <v-layout>
           <Header />
           <v-main style="height: 800px">
-            <router-view />
+            <router-view :key="$route.fullPath" />
             <v-card-text>
               The navigation drawer will appear from the bottom on smaller size screens.
             </v-card-text>

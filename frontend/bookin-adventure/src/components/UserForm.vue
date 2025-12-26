@@ -50,9 +50,9 @@ const submit = async () => {
       <v-text-field v-model="form.companyAddress" :label="t('register.companyAddress')" :rules="[rules.required]" required />
     </template>
     <!-- <v-alert v-if="props.error" type="error" class="mt-2">{{ props.error }}</v-alert> -->
-    <v-btn :loading="props.loading" type="submit" color="primary" class="mt-4" block>
-      {{ props.mode === 'register' ? t('register.submit') : t('edit.submit') }}
-    </v-btn>
+    <slot name="actions">
+
+    </slot>
   </v-form>
 </template>
 

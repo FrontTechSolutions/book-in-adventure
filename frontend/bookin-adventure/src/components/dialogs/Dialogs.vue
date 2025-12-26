@@ -1,8 +1,7 @@
 <script lang="ts" setup>
     import Login from '@/components/dialogs/Login.vue';
-    import PasswordUpdate from '@/components/dialogs/PasswordUpdate.vue';
+    //ajout des autres dialogues si besoin
 </script>
 <template>
     <Login/>
-    <PasswordUpdate/>
 </template>

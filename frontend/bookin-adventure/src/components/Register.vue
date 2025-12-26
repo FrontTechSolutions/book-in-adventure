@@ -5,7 +5,8 @@ import { useUserStore } from '@/stores/user.store'
 import { useToastersStore } from '@/stores/toasters.store'
 import { ToasterLevel } from '@/interfaces/ToasterLevel'
 import UserForm from './UserForm.vue'
-import type { RegisterPayload } from '@/interfaces/payload/UserPayloads'
+import { useRegisterPayload } from '@/composables/useRegisterPayload'
+const { buildRegisterPayload } = useRegisterPayload();
 const toastersStore = useToastersStore()
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -14,52 +15,77 @@ const router = useRouter()
 
 
 const onSubmit = async (formData: any, type: string) => {
+  const payload = buildRegisterPayload(formData, type);
   try {
-    let payload: RegisterPayload
-    if (type === 'pro') {
-      payload = {
-        email: formData.email,
-        password: formData.password,
-        lastName: formData.lastName,
-        firstName: formData.firstName,
-        phone: formData.phone,
-        role: 'pro',
-        companyName: formData.companyName,
-        companyAddress: formData.companyAddress,
-        birthDate: formData.birthDate
-      }
-    } else {
-      payload = {
-        email: formData.email,
-        password: formData.password,
-        lastName: formData.lastName,
-        firstName: formData.firstName,
-        role: 'client',
-        phone: formData.phone,
-        birthDate: formData.birthDate
-      }
-    }
-    const result = await userStore.register(payload)
-    if(result){
-      toastersStore.addToaster({
-        title: t('toasters.success'),
-        content: t('toasters.content.register_success'),
-        level: ToasterLevel.SUCCESS,
-        lifeTime: 10,
-        showMoreInfoButton: false,
-      })
-      router.push('/verify-account')
-    }
-  } catch (err: any) {
+    await userStore.register(payload)
+    router.push({ path: '/verify-account', query: { verificationType: 'account' } })
     toastersStore.addToaster({
-      title: t('toasters.error'),
-      content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
+      title: t('toasters.success'),
+      content: t('toasters.content.register_success'),
+      level: ToasterLevel.SUCCESS,
+      lifeTime: 10,
+      showMoreInfoButton: false,
+    })    
+  } catch (err:any) {
+    toastersStore.addToaster({
+      title: t('toasters.register_error_title'),
+       content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
-      showMoreInfoButton: true,
+      showMoreInfoButton: false,
     })
   }
 }
+
+
+
+// const onSubmit = async (formData: any, type: string) => {
+//   try {
+//     let payload: RegisterPayload
+//     if (type === 'pro') {
+//       payload = {
+//         email: formData.email,
+//         password: formData.password,
+//         lastName: formData.lastName,
+//         firstName: formData.firstName,
+//         phone: formData.phone,
+//         role: 'pro',
+//         companyName: formData.companyName,
+//         companyAddress: formData.companyAddress,
+//         birthDate: formData.birthDate
+//       }
+//     } else {
+//       payload = {
+//         email: formData.email,
+//         password: formData.password,
+//         lastName: formData.lastName,
+//         firstName: formData.firstName,
+//         role: 'client',
+//         phone: formData.phone,
+//         birthDate: formData.birthDate
+//       }
+//     }
+//     const result = await userStore.register(payload)
+//     if(result){
+//       toastersStore.addToaster({
+//         title: t('toasters.success'),
+//         content: t('toasters.content.register_success'),
+//         level: ToasterLevel.SUCCESS,
+//         lifeTime: 10,
+//         showMoreInfoButton: false,
+//       })
+//       router.push('/verify-account')
+//     }
+//   } catch (err: any) {
+//     toastersStore.addToaster({
+//       title: t('toasters.error'),
+//       content: t('backend.' + err?.response.data.error)  || t('toasters.content.error.common'),
+//       level: ToasterLevel.ERROR,
+//       lifeTime: 10,
+//       showMoreInfoButton: true,
+//     })
+//   }
+// }
 </script>
 
 <template>
@@ -71,7 +97,16 @@ const onSubmit = async (formData: any, type: string) => {
         :loading="userStore.loading"
         :error="userStore.error"
         :onSubmit="onSubmit"
-      />
+      >
+        <template #actions>
+          <v-card-actions>
+            <v-btn :loading="false" type="submit" color="primary">
+              {{ t('register.submit') }}
+            </v-btn>
+            <v-btn text @click="router.push('/')">{{ t('register.cancel') }}</v-btn>
+          </v-card-actions>
+        </template>
+    </UserForm>
     </v-card-text>
   </v-card>
 </template>

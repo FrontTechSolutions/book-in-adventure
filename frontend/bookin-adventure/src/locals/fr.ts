@@ -1,5 +1,4 @@
 
-import { warn } from 'vue'
 import { fr } from 'vuetify/locale'
 
 export default {
@@ -37,6 +36,7 @@ export default {
     companyName: "Nom de l'entreprise",
     companyAddress: "Adresse de l'entreprise",
     submit: "Créer mon compte",
+    cancel: "Annuler",
     required: "Champ requis",
     email_invalid: "Email invalide",
     password_min: "6 caractères minimum",
@@ -106,16 +106,25 @@ export default {
       companyAddress: "Adresse de l'entreprise",
     }
   },
+  userProfileUpdate:{
+      title: "Mettre à jour mon profil",
+      submit: "Mettre à jour",
+      cancel: "Annuler"
+  },  
+  userPasswordUpdate:{
+    title: "Mettre à jour mon mot de passe",
+    password: "Mot de passe",
+    submit: "Modifier mon mot de passe",
+    cancel: "Annuler"
+  },
   userPassword:{
     title: "Mettre à jour mon mot de passe",
     password: "Mot de passe",
     edit: "Modifier mon mot de passe",
-  },
+    cancel: "Annuler"
+  },  
   dialogs:{
-    profile_update:{
-      title: "Mettre à jour mon profil",
-      cancel: "Annuler"
-    },
+
     login:{
       title: "Connexion",
       email: "Email",
@@ -168,6 +177,7 @@ export default {
       login_success: "Connexion réussie ! Bienvenue.",
       profile_update_success: "Profil mis à jour avec succès.",
       password_update_success: "Mot de passe mis à jour avec succès.",
+      password_update_code_success: "Code de réinitialisation du mot de passe vérifié avec succès.",
       error:{
         common: "Une erreur est survenue. Veuillez réessayer plus tard."
       }

@@ -147,6 +147,7 @@ export const useUserStore = defineStore('user', () => {
       error.value = undefined
       try {
         const payload = { email: user.value?.email || '', code }  
+        console.log('Verifying account with payload:', payload);
         const response:VerifyAccountResponse = await userService.verifyAccount(payload)
         response.user && (user.value = response.user)
         return response

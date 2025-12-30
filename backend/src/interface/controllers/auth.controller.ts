@@ -86,12 +86,13 @@ const authController = {
 
       const user = await User.create(userData);
 
-      try {
-        await sendVerificationEmail(email, code);
-      } catch (err) {
-        await User.findByIdAndDelete(user._id);
-        throw err;
-      }
+      //TODO decommenter quand le mailer sera fonctionnel
+      // try {
+      //   await sendVerificationEmail(email, code);
+      // } catch (err) {
+      //   await User.findByIdAndDelete(user._id);
+      //   throw err;
+      // }
 
       const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'dev_secret', { expiresIn: '7d' });
       res.status(201).json({ user: { id: user._id, email: user.email, role: user.role }, token, message: 'success.account_created' });
@@ -256,8 +257,13 @@ const authController = {
       user.passwordResetAttempts = 0;
       await user.save();
 
-      // À adapter selon ton service d'envoi d'email
-      await sendVerificationEmail(email, code);
+      // TODO decommenter quand le mailer sera fonctionnel
+      // try{
+      //   await sendVerificationEmail(email, code);
+      // } catch(err){
+      //   console.error('Error sending password reset email:', err);
+      //   return res.status(500).json({ error: 'error.email_sending_failed' });
+      // }
 
       res.json({ message: 'success.code_sent' });
     } catch (err) {
@@ -347,12 +353,9 @@ const authController = {
     try {
       const { newEmail, password } = req.body;
       if (!req.user || !req.user.id) {
-        console.error('emailRequest: utilisateur non authentifié ou req.user manquant');
         return res.status(401).json({ error: 'error.unauthenticated' });
       }
       const userId = req.user.id;
-
-      console.log('Email change request for user req.body:', req.body);
 
       const user = await User.findById(userId);
       if (!user) {
@@ -379,6 +382,14 @@ const authController = {
       user.emailRequestAttempts = 0;
 
       await user.save();
+
+      //TODO decommenter quand le mailer sera fonctionnel
+      // try{
+      //   await sendVerificationEmail(newEmail, code);
+      // } catch(err){
+      //   console.error('Error sending password reset email:', err);
+      //   return res.status(500).json({ error: 'error.email_sending_failed' });
+      // }      
 
       res.json({
         success: true,

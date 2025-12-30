@@ -22,10 +22,7 @@ const props = defineProps<{
 }>();
 
 
-const genrateCode = async () => {
-  if(!userStore.user?.email) return;
-   await userStore.passwordRequestCode(userStore.user?.email)
-};
+
 
 const submit = async () => {
 if(props.type === 'account') {
@@ -91,7 +88,7 @@ const handleEmailConfirmCode = async () => {
     console.log('Submitting email confirm code:', otp.value);
     const response = await userStore.emailConfirmCode(otp.value);
     if (response?.success) {
-      router.push('/client-profile');
+      router.push({ name: 'client-profile', query: { showEmailUpdate: 'false' } });
       toastersStore.addToaster({
         title: t('toasters.success'),
         content: t('toasters.content.email_update_success'),
@@ -115,9 +112,11 @@ const handleEmailConfirmCode = async () => {
 const cancel = () => {
   if(props.type === 'account') {
     router.push({ path: '/' });
-  }else{
+  }else if (props.type === 'password') {
     console.log('cancel password reset');
     router.replace({ name: 'client-profile', query: { showPasswordUpdate: 'false' } });
+  }else if (props.type === 'email') {
+    router.push({ path: '/client-profile', query: { showEmailUpdate: 'false' } });
   }
   
 };
@@ -133,16 +132,19 @@ watch(otp, (val) => {
 <template>
 <v-card>
     <v-card-title>
-        {{ props.type === 'account' ? t('verifyAccount.title') : t('passwordReset.verifyTitle') }}
+      <span v-if="props.type === 'account'">{{ t('verifyAccount.title') }}</span>
+      <span v-else-if="props.type === 'email'">{{ t('emailUpdate.verifyTitle') }}</span>
+      <span v-else>{{ t('passwordReset.verifyTitle') }}</span>
     </v-card-title>
     <v-card-text>
-        {{ props.type === 'account' ? t('verifyAccount.instruction') : t('passwordReset.verifyInstruction') }}
+      <span v-if="props.type === 'account'">{{ t('verifyAccount.instruction') }}</span>
+      <span v-else-if="props.type === 'email'">{{ t('emailUpdate.verifyInstruction') }}</span>
+      <span v-else>{{ t('passwordReset.verifyInstruction') }}</span>
     <v-form ref="formRefVerify">
         <v-otp-input v-model="otp" focus-all></v-otp-input>
     </v-form>  
     </v-card-text>  
     <v-card-actions>
-        <v-btn color="primary" @click="genrateCode">TODO généré un nouveau code</v-btn>
         <v-btn  @click="cancel">cancel</v-btn>
     </v-card-actions>
 </v-card>

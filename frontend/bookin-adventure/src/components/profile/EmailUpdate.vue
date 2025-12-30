@@ -42,7 +42,7 @@ const submit = async () => {
 };
 
 const cancel = () => {
-    router.replace({ query: { showPasswordUpdate: 'false' } });
+    router.replace({ query: { showEmailUpdate: 'false' } });
 };
 </script>
 

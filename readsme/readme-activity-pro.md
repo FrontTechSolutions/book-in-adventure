@@ -38,10 +38,10 @@ Lors de la création ou l’édition d’une activité, le professionnel renseig
 | Galerie de photos    | Images       | Non         | Images supplémentaires                       |
 | Lieu de rendez-vous  | Texte        | Non         | Adresse précise, sinon adresse du pro        |
 | Tag / Catégorie      | Sélecteur    | Oui         | Coaching, surf, yoga, etc.                   |
-+| Durée                | Durée        | Oui         | Ex : 1h, 2h30                                |
-+| Nombre de places max | Nombre       | Oui         | Nombre de participants par créneau           |
-+| Animateur            | Sélecteur    | Oui         | Animateur responsable                        |
-+| Couleur dominante    | Couleur      | Non         | Pour affichage personnalisé                  |
+| Durée                | Durée        | Oui         | Ex : 1h, 2h30                                |
+| Nombre de places max | Nombre       | Oui         | Nombre de participants par créneau           |
+| Animateur            | Sélecteur    | Oui         | Animateur responsable                        |
+| Couleur dominante    | Couleur      | Non         | Pour affichage personnalisé                  |
 
 ## Parcours utilisateur (pro)
 

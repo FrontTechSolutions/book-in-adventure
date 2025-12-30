@@ -33,7 +33,7 @@ if(props.type === 'account') {
   } else if (props.type === 'password') {
     await handlePasswordConfirmCode();
   } else if (props.type === 'email') {
-    // TODO handle email verification
+    await handleEmailConfirmCode();
   }
 };
 
@@ -88,6 +88,7 @@ const handlePasswordConfirmCode = async () => {
 
 const handleEmailConfirmCode = async () => {
   try {
+    console.log('Submitting email confirm code:', otp.value);
     const response = await userStore.emailConfirmCode(otp.value);
     if (response?.success) {
       router.push('/client-profile');

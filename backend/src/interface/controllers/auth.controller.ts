@@ -57,6 +57,7 @@ const authController = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const code:string = generateVerificationCode();
+      console.log('Generated verification code:', code);
 
       const userData: any = {
         email,
@@ -108,6 +109,9 @@ const authController = {
     try {
       const userId = req.params.id;
       const updateData = { ...req.body };
+      if (!req.user || req.user.id !== userId) {
+        return res.status(403).json({ error: 'error.forbidden' });
+      }      
       // Empêcher la mise à jour de certains champs sensibles
       delete updateData.password;
       delete updateData.email;
@@ -167,6 +171,10 @@ const authController = {
   getUserById: async (req: any, res: any) => {
     try {
       const userId = req.params.id;
+      // Vérification de sécurité : l'utilisateur ne peut accéder qu'à ses propres infos
+      if (!req.user || req.user.id !== userId) {
+        return res.status(403).json({ error: 'error.forbidden' });
+      }
       const user = await User.findById(userId).select('-password');
       if (!user) return res.status(404).json({ error: 'error.user_not_found' });
       res.status(200).json({ user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone, isVerified: user.isVerified, birthDate: user.birthDate } });
@@ -183,6 +191,14 @@ const authController = {
     try {
       const { email, code } = req.body;
       const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+
+      if (!req.user || req.user.id !== user._id.toString()) {
+        return res.status(403).json({ error: 'error.forbidden' });
+      }      
 
       if (!user) {
         return res.status(404).json({ error: 'error.user_not_found' });
@@ -226,9 +242,15 @@ const authController = {
     try {
       const { email } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ error: 'error.user_not_found' });
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+      if (!req.user || req.user.id !== user._id.toString()) {
+        return res.status(403).json({ error: 'error.forbidden' });
+      }
 
       const code = generateVerificationCode();
+      console.log('Generated password reset code:', code);
       user.passwordRequestCodeHash = hashCode(code);
       user.passwordResetExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
       user.passwordResetAttempts = 0;
@@ -249,7 +271,12 @@ const authController = {
     try {
       const { email, code } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ error: 'error.user_not_found' });
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+      if (!req.user || req.user.id !== user._id.toString()) {
+        return res.status(403).json({ error: 'error.forbidden' });
+      }
       if (!user.passwordResetExpiresAt || user.passwordResetExpiresAt.getTime() < Date.now()) {
         return res.status(400).json({ error: 'error.code_expired' });
       }
@@ -278,8 +305,12 @@ const authController = {
         passwordResetExpiresAt: { $gt: Date.now() }
       });
 
-      if (!user)
-        return res.status(400).json({ error: 'error.code_invalid_or_expired' });
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+      if (!req.user || req.user.id !== user._id.toString()) {
+        return res.status(403).json({ error: 'error.forbidden' });
+      }
 
       // Vérifier le nombre de tentatives
       if (user.passwordResetAttempts >= 5) {
@@ -315,9 +346,13 @@ const authController = {
   emailRequest: async (req: any, res: any) => {
     try {
       const { newEmail, password } = req.body;
+      if (!req.user || !req.user.id) {
+        console.error('emailRequest: utilisateur non authentifié ou req.user manquant');
+        return res.status(401).json({ error: 'error.unauthenticated' });
+      }
       const userId = req.user.id;
 
-      console.log('Email change request for user req.body:',req.body);
+      console.log('Email change request for user req.body:', req.body);
 
       const user = await User.findById(userId);
       if (!user) {
@@ -336,6 +371,7 @@ const authController = {
       }
 
       const code = generateVerificationCode();
+      console.log('Generated email change code:', code);
 
       user.emailRequestNewEmail = newEmail;
       user.emailRequestCodeHash = hashCode(code);
@@ -363,6 +399,9 @@ const authController = {
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: 'error.user_not_found' });
+      }
+      if (!req.user || req.user.id !== user._id.toString()) {
+        return res.status(403).json({ error: 'error.forbidden' });
       }
 
       // Vérifier qu'une demande existe

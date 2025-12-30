@@ -16,7 +16,7 @@ onMounted(() => {
 
 <template>
   <v-app>
-    <toasters-queue :model-value="toastersStore.toasters"/>
+    <toasters-queue />
       <v-card class="content">
         <v-layout>
           <Header />

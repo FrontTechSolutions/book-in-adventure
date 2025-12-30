@@ -10,5 +10,6 @@ if (typeof route.query.verificationType === 'string' && allowedTypes.includes(ro
 </script>
 
 <template>
+  verificationType: {{ verificationType }}
   <otp-form :type="verificationType || 'account'"></otp-form>
 </template>

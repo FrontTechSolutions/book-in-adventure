@@ -224,6 +224,7 @@ export const useUserStore = defineStore('user', () => {
       error.value = undefined
       try {
         const payload: EmailConfirmPayload = { email: user.value?.email || '', code }
+        console.log('Confirming email with payload:', payload);
         const response = await userService.emailConfirmCode(payload)
         if(response.user && user.value){
           user.value.email = response.user.email

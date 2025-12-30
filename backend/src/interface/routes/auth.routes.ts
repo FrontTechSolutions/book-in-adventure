@@ -10,7 +10,7 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.put('/update/:id', authenticateToken, authController.update);
 router.get('/user/:id', authenticateToken, authController.getUserById);
-router.post('/verify-account', authenticateToken, authController.verifyAccount);
+router.post('/verify-account', authController.verifyAccount);
 router.post('/password-request/code', authenticateToken, authController.passwordRequestCode);
 router.post('/password-confirm/code', authenticateToken, authController.passwordConfirmCode);
 router.post('/password-confirm', authenticateToken, authController.passwordConfirm);

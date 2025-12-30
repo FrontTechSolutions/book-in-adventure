@@ -8,6 +8,7 @@ import type { Request, Response } from 'express';
 
 // Utilitaire pour valider les champs requis selon le rôle
 function validateUserInput(body: any) {
+  console.log('Validating user input:', body);
   const errors: string[] = [];
   if (!body.email) errors.push('error.email_required');
   if (!body.password) errors.push('error.password_required');
@@ -20,7 +21,6 @@ function validateUserInput(body: any) {
     if (!body.phone) errors.push('error.phone_required');
     if (!body.companyName) errors.push('error.companyname_required');
     if (!body.companyAddress) errors.push('error.companyaddress_required');
-    if (!body.activityDescription) errors.push('error.activitydescription_required');
   }
   return errors;
 }
@@ -193,13 +193,8 @@ const authController = {
       const { email, code } = req.body;
       const user = await User.findOne({ email });
 
-      if (!user) {
-        return res.status(404).json({ error: 'error.user_not_found' });
-      }
-
-      if (!req.user || req.user.id !== user._id.toString()) {
-        return res.status(403).json({ error: 'error.forbidden' });
-      }      
+      console.log('Verifying account for email:', email);
+      console.log('Provided code:', code);
 
       if (!user) {
         return res.status(404).json({ error: 'error.user_not_found' });

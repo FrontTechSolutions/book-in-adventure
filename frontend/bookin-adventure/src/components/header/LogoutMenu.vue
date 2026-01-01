@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/stores/user.store';
+import router from '@/plugins/router';
 const { t } = useI18n();
 const userStore = useUserStore();
   const items = [
@@ -9,6 +10,7 @@ const userStore = useUserStore();
 
   const logout = () => {    
     userStore.logout();
+    router.push('/');
   }
 </script>
 

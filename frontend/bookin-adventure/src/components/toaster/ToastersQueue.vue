@@ -1,78 +1,41 @@
 <script setup lang="ts">
+import { computed, ref, type ComponentPublicInstance } from 'vue'
 import ToasterTemplate from '@/components/toaster/ToasterTemplate.vue'
 import type { ToasterData } from '@/interfaces/ToasterData'
+import { useCommonStore } from '@/stores/common.store'
 
-import { v4 as uuidv4 } from 'uuid'
-import { computed, ref, type ComponentPublicInstance } from 'vue'
+const commonStore = useCommonStore()
 
-type ToasterInstance = ComponentPublicInstance &
-  InstanceType<typeof ToasterTemplate>
 
-const toastersRefs = ref<ToasterInstance[]>([])
+const toastersRefs = ref<(ComponentPublicInstance | Element)[]>([])
 
-function setToasterRef(
-  el: Element | ComponentPublicInstance | null,
-  index: number,
-) {
-  if (el && isVueComponent(el)) {
-    toastersRefs.value[index] = el as ToasterInstance
-  } else {
-    toastersRefs.value.splice(index, 1)
-  }
+const visibleToasts = computed(() => commonStore.toasters.slice(0, 4))
+
+const deleteToastr = (id: string) => {
+  commonStore.removeToaster(id)
 }
 
-function isVueComponent(
-  el: Element | ComponentPublicInstance | null,
-): el is ComponentPublicInstance {
-  return !!(el as ComponentPublicInstance)?.$el
+const pauseEveryToaster = () => {
+  toastersRefs.value.forEach(toaster => {
+    if (toaster && typeof (toaster as any).pauseToaster === 'function') {
+      (toaster as any).pauseToaster()
+    }
+  })
 }
 
-const props = defineProps<{
-  modelValue: ToasterData[]
+const resumeEveryToaster = () => {
+  toastersRefs.value.forEach(toaster => {
+    if (toaster && typeof (toaster as any).resumeToaster === 'function') {
+      (toaster as any).resumeToaster()
+    }
+  })
+}
+
+const emit = defineEmits<{
+  showMoreInfo: [toast: ToasterData]
 }>()
 
-const emit = defineEmits(['update:modelValue', 'showMoreInfo'])
-
-// Ajout automatique de UUID aux toasts sans id
-const localModel = computed({
-  get() {
-    // Ajoute un id aux nouveaux toasts sans en modifier la réactivité du tableau parent
-    const withIds = props.modelValue.map(toast => ({
-      ...toast,
-      id: toast.id ?? uuidv4(),
-    }))
-
-    // Si on détecte que certains objets n'ont pas d'id dans le tableau d'origine, on pousse une version corrigée au parent
-    if (withIds.some((t, i) => props.modelValue[i] && t.id !== props.modelValue[i].id)) {
-      emit('update:modelValue', withIds)
-    }
-
-    return withIds
-  },
-  set(val) {
-    emit('update:modelValue', val)
-  },
-})
-
-const visibleToasts = computed(() => localModel.value.slice(0, 4))
-
-function deleteToastr(id: string) {
-  localModel.value = localModel.value.filter(toast => toast.id !== id)
-}
-
-function pauseEveryToaster() {
-  toastersRefs.value.forEach((toaster: { pauseToaster: () => void }) => {
-    toaster?.pauseToaster()
-  })
-}
-
-function resumeEveryToaster() {
-  toastersRefs.value.forEach((toaster: { resumeToaster: () => void }) => {
-    toaster?.resumeToaster()
-  })
-}
-
-function onShowMoreInfo(toast: ToasterData) {
+const onShowMoreInfo = (toast: ToasterData) => {
   emit('showMoreInfo', toast)
 }
 </script>
@@ -82,8 +45,8 @@ function onShowMoreInfo(toast: ToasterData) {
     <transition-group name="fade">
       <ToasterTemplate
         v-for="(value, index) in visibleToasts"
-        :ref="(el: Element | ComponentPublicInstance | null) => setToasterRef(el, index)"
         :key="value.id"
+        :ref="el => { if (el) toastersRefs[index] = el }"
         :title="value.title"
         :content="value.content"
         :life-time="value.lifeTime"
@@ -110,6 +73,7 @@ function onShowMoreInfo(toast: ToasterData) {
   gap: 5px;
   z-index: 9999999;
 }
+
 .fade-move,
 .fade-enter-active,
 .fade-leave-active {

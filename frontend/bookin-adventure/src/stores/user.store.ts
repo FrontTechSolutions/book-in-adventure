@@ -27,6 +27,10 @@ export const useUserStore = defineStore('user', () => {
     }
   })
 
+  const isVerifiedAccount = computed(() => {
+    return user.value?.isVerified || false
+  })
+
   const loadFromStorage = () => {
     const t = localStorage.getItem('token')
     if (t) {
@@ -159,6 +163,20 @@ export const useUserStore = defineStore('user', () => {
       }
     }
 
+    const resendVerificationCode = async (email: string): Promise<PasswordRequestCodeResponse> => {
+      loading.value = true
+      error.value = undefined
+      try {
+        const response: PasswordRequestCodeResponse = await userService.resendVerificationCode(email)
+        return response
+      } catch (err: any) {
+        error.value = err.response?.data?.error || err.message || 'error.resend_verification_failed'
+        throw err
+      } finally {
+        loading.value = false
+      }
+    }
+
     const passwordRequestCode = async (email: string): Promise<PasswordRequestCodeResponse> => {
       loading.value = true
       error.value = undefined
@@ -258,10 +276,12 @@ export const useUserStore = defineStore('user', () => {
     logout,
     loadFromStorage,
     verifyAccount,
+    resendVerificationCode,
     userRole,
     login,
     getRole,
     getUserId,
+    isVerifiedAccount,
     isLoggedIn,
     loadUser,
     passwordRequestCode,

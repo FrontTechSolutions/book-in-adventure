@@ -32,7 +32,9 @@ export default {
     legal_lastName: "Nom du responsable légal",
     legal_firstName: "Prénom du responsable légal",
     phone: "Téléphone",
+    legal_phone: "Téléphone du responsable légal",
     birthDate: "Date de naissance",
+    legal_birthDate: "Date de naissance du responsable légal",
     companyName: "Nom de l'entreprise",
     companyAddress: "Adresse de l'entreprise",
     submit: "Créer mon compte",
@@ -200,6 +202,19 @@ export default {
     }
   },
 
+  common: {
+    cancel: 'Annuler',
+    resend_code: 'Renvoyer le code',
+    verify_now: 'Vérifier maintenant'
+  },
+
+  alerts:{
+    verify_account:{
+      title: "Vérifiez votre compte",
+      text: "Veuillez {link} pour accéder à toutes les fonctionnalités. Consultez votre email pour le code de vérification.",
+      link: "vérifier votre compte"
+    }
+  }
   
 }
 

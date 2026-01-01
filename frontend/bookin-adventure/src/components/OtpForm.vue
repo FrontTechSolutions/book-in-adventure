@@ -7,18 +7,19 @@ import { useUserStore } from '@/stores/user.store';
 import { watch } from 'vue';
 import router from '@/plugins/router';
 import { useCommonStore } from '@/stores/common.store';
-import { useToastersStore } from '@/stores/toasters.store';
+
 import { ToasterLevel } from '@/interfaces/ToasterLevel';
 const userStore = useUserStore();
 const commonStore = useCommonStore();
-const toastersStore = useToastersStore();
-
 const otp = ref('');
+const isResending = ref(false);
 
 const OTP_LENGTH = 6; // adapte selon ton besoin
 
 const props = defineProps<{
   type: 'password' | 'account' | 'email';
+  newEmail?: string;
+  password?: string;
 }>();
 
 
@@ -26,6 +27,7 @@ const props = defineProps<{
 
 const submit = async () => {
 if(props.type === 'account') {
+  console.log('Submitting account verification code:', otp.value);
     await handleAccountVerification();
   } else if (props.type === 'password') {
     await handlePasswordConfirmCode();
@@ -36,21 +38,25 @@ if(props.type === 'account') {
 
 const handleAccountVerification = async () => {
   try {
+    console.log('----handleAccountVerification', otp.value);
     const response = await userStore.verifyAccount(otp.value);
     if (response?.user.isVerified) {
       router.push('/client-profile');
-      toastersStore.addToaster({
+      commonStore.addToaster({
         title: t('toasters.success'),
         content: t('toasters.content.register_success'),
         level: ToasterLevel.SUCCESS,
         lifeTime: 10,
         showMoreInfoButton: false,
       })       
-    } 
+    }else{
+      console.log('Account verification failed:', response);
+    }
   } catch (err: any) {
-    toastersStore.addToaster({
+    console.log('Error during account verification:', err);
+    commonStore.addToaster({
       title: t('toasters.error'),
-      content: userStore.error || t('toasters..errorCommon'),
+      content: userStore.error || t('toasters.errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: true,
@@ -63,7 +69,7 @@ const handlePasswordConfirmCode = async () => {
     const response = await userStore.passwordConfirmCode(userStore.user?.email || '', otp.value);
     if (response?.success) {
       router.push({ name: 'client-profile', query: { showPasswordUpdate: 'false' } })
-      toastersStore.addToaster({
+      commonStore.addToaster({
         title: t('toasters.success'),
         content: t('toasters.content.password_update_code_success'),
         level: ToasterLevel.SUCCESS,
@@ -72,9 +78,9 @@ const handlePasswordConfirmCode = async () => {
       })       
     } 
   } catch (err: any) {
-    toastersStore.addToaster({
+    commonStore.addToaster({
       title: t('toasters.error'),
-      content: userStore.error || t('toasters..errorCommon'),
+      content: userStore.error || t('toasters.errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: true,
@@ -89,7 +95,7 @@ const handleEmailConfirmCode = async () => {
     const response = await userStore.emailConfirmCode(otp.value);
     if (response?.success) {
       router.push({ name: 'client-profile', query: { showEmailUpdate: 'false' } });
-      toastersStore.addToaster({
+      commonStore.addToaster({
         title: t('toasters.success'),
         content: t('toasters.content.email_update_success'),
         level: ToasterLevel.SUCCESS,
@@ -98,9 +104,9 @@ const handleEmailConfirmCode = async () => {
       })       
     } 
   } catch (err: any) {
-    toastersStore.addToaster({
+    commonStore.addToaster({
       title: t('toasters.error'),
-      content: userStore.error || t('toasters..errorCommon'),
+      content: userStore.error || t('toasters.errorCommon'),
       level: ToasterLevel.ERROR,
       lifeTime: 10,
       showMoreInfoButton: true,
@@ -111,7 +117,7 @@ const handleEmailConfirmCode = async () => {
 
 const cancel = () => {
   if(props.type === 'account') {
-    router.push({ path: '/' });
+    router.push({ name: 'client-profile' });
   }else if (props.type === 'password') {
     console.log('cancel password reset');
     router.replace({ name: 'client-profile', query: { showPasswordUpdate: 'false' } });
@@ -119,6 +125,39 @@ const cancel = () => {
     router.push({ path: '/client-profile', query: { showEmailUpdate: 'false' } });
   }
   
+};
+
+const resendCode = async () => {
+  isResending.value = true;
+  try {
+    if (props.type === 'account') {
+      await userStore.resendVerificationCode(userStore.user?.email || '');
+      commonStore.addToaster({
+        title: t('toasters.success'),
+        content: t('toasters.content.code_resent'),
+        level: ToasterLevel.SUCCESS,
+        lifeTime: 5,
+      });
+    } else if (props.type === 'password') {
+      await userStore.passwordRequestCode(userStore.user?.email || '');
+      commonStore.addToaster({
+        title: t('toasters.success'),
+        content: t('toasters.content.code_resent'),
+        level: ToasterLevel.SUCCESS,
+        lifeTime: 5,
+      });
+    }
+  } catch (err: any) {
+    commonStore.addToaster({
+      title: t('toasters.error'),
+      content: userStore.error || t('toasters.errorCommon'),
+      level: ToasterLevel.ERROR,
+      lifeTime: 10,
+      showMoreInfoButton: true,
+    });
+  } finally {
+    isResending.value = false;
+  }
 };
 
 // Surveille la valeur de l'OTP
@@ -145,7 +184,11 @@ watch(otp, (val) => {
     </v-form>  
     </v-card-text>  
     <v-card-actions>
-        <v-btn  @click="cancel">cancel</v-btn>
+        <v-btn v-if="type !== 'email'" color="secondary" variant="text" @click="resendCode" :loading="isResending">
+          {{ t('common.resend_code') }}
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn @click="cancel">{{ t('common.cancel') }}</v-btn>
     </v-card-actions>
 </v-card>
 

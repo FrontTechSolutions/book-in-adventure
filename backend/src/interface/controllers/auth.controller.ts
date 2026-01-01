@@ -232,6 +232,45 @@ const authController = {
   },
 
   /**
+   * RESEND VERIFICATION CODE
+   */
+  resendVerificationCode: async (req: any, res: any) => {
+    try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+      
+      if (!user) {
+        return res.status(404).json({ error: 'error.user_not_found' });
+      }
+
+      if (user.isVerified) {
+        return res.status(400).json({ error: 'error.account_already_verified' });
+      }
+
+      // Génère un nouveau code
+      const code = generateVerificationCode();
+      console.log('Resent verification code:', code);
+      
+      user.verificationCodeHash = hashCode(code);
+      user.verificationCodeExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+      user.verificationAttempts = 0;
+      await user.save();
+
+      //TODO decommenter quand le mailer sera fonctionnel
+      // try {
+      //   await sendVerificationEmail(email, code);
+      // } catch (err) {
+      //   return res.status(500).json({ error: 'error.email_sending_failed' });
+      // }
+
+      res.json({ message: 'success.code_sent' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'error.server' });
+    }
+  },
+
+  /**
    * PASSWORD RESET - REQUEST 
    */
   passwordRequestCode: async (req: any, res: any) => {

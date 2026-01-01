@@ -2,7 +2,7 @@
 import { ToasterLevel } from '@/interfaces/ToasterLevel';
 import router from '@/plugins/router';
 import { useCommonStore } from '@/stores/common.store';
-import { useToastersStore } from '@/stores/toasters.store';
+
 import { useUserStore } from '@/stores/user.store';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n'
@@ -11,7 +11,7 @@ const { t } = useI18n()
 const formRefPassword = ref();
 const commonStore = useCommonStore();
 const userStore = useUserStore();
-const toastersStore = useToastersStore();
+
 
 // Ajoute ces variables pour lier les champs
 const password = ref('');
@@ -21,8 +21,8 @@ const submit = async () => {
     try {
         const response = await userStore.emailRequest(newEmail.value, password.value, );
         if (response?.success) {
-            router.push({ path: '/verify-account', query: { verificationType: 'email' } });
-            toastersStore.addToaster({
+            router.push({ path: '/verify-otp', query: { verificationType: 'email' } });
+            commonStore.addToaster({
                 title: t('toasters.info'),
                 content: t('toasters.content.email_request_asked'),
                 level: ToasterLevel.INFO,
@@ -31,9 +31,9 @@ const submit = async () => {
             })             
         }        
     } catch (err: any) {
-        toastersStore.addToaster({
+        commonStore.addToaster({
         title: t('toasters.error'),
-        content: t('backend.' + err?.response.data.error)  || t('toasters..errorCommon'),
+        content: t('backend.' + err?.response.data.error)  || t('toasters.errorCommon'),
         level: ToasterLevel.ERROR,
         lifeTime: 10,
         showMoreInfoButton: false,

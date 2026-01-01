@@ -35,6 +35,9 @@ export const userService = {
   verifyAccount: async (payload:ConfirmationPayload) => {
     return await apiService.post<VerifyAccountResponse>('/auth/verify-account', payload)
   },
+  resendVerificationCode: async (email: string) => {
+    return await apiService.post<PasswordRequestCodeResponse>('/auth/resend-verification-code', { email })
+  },
   passwordRequestCode: async (email: string) => {
     return await apiService.post<PasswordRequestCodeResponse>('/auth/password-request/code', { email }, getAuthHeaders())
   },

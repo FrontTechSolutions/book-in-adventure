@@ -2,8 +2,9 @@
 import { ref } from 'vue';
 import { useActivityStore } from '../stores/activity.store';
 import { useI18n } from 'vue-i18n';
-import { useToastersStore } from '@/stores/toasters.store';
+
 import { ToasterLevel } from '@/interfaces/ToasterLevel';
+import { useCommonStore } from '@/stores/common.store';
 
 const valid = ref(false);
 const activity = ref({
@@ -37,7 +38,7 @@ const rules = {
 
 
 const activityStore = useActivityStore();
-const toastersStore = useToastersStore();
+const commonStore = useCommonStore();
 const proId = 'demo-pro-id'; // À remplacer par l'id réel du pro
 
 const onSubmit = async () => {
@@ -45,7 +46,7 @@ const onSubmit = async () => {
     await activityStore.createActivity(proId, { ...activity.value });
     if (!activityStore.error) {
       await activityStore.fetchActivities(proId);
-      toastersStore.addToaster({
+      commonStore.addToaster({
         title: t('activity.toaster.success_title'),
         content: t('activity.toaster.success_content'),
         level: ToasterLevel.SUCCESS,
@@ -53,7 +54,7 @@ const onSubmit = async () => {
         showMoreInfoButton: false,
       });
     } else {
-      toastersStore.addToaster({
+      commonStore.addToaster({
         title: t('activity.toaster.error_title'),
         content: t(activityStore.error),
         level: ToasterLevel.ERROR,

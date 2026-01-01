@@ -61,19 +61,30 @@ const submit = async () => {
     <template v-if="type === 'pro'">
       <v-text-field v-model="form.lastName" :label="t('register.legal_lastName')" :rules="[rules.required, rules.name]" required />
       <v-text-field v-model="form.firstName" :label="t('register.legal_firstName')" :rules="[rules.required, rules.name]" required />
+      <v-text-field
+        v-model="birthDateDisplay"
+        :label="t('register.legal_birthDate')"
+        :rules="[rules.required, rules.birthDate]"
+        required
+        @update:modelValue="onBirthDateInput"
+      />   
+      <v-text-field v-model="form.phone" :label="t('register.legal_phone')" :rules="[rules.required]" required />      
     </template>
     <template v-else>
       <v-text-field v-model="form.lastName" :label="t('register.lastName')" :rules="[rules.required, rules.name]" required />
       <v-text-field v-model="form.firstName" :label="t('register.firstName')" :rules="[rules.required, rules.name]" required />
+      <v-text-field
+        v-model="birthDateDisplay"
+        :label="t('register.birthDate')"
+        :rules="[rules.required, rules.birthDate]"
+        required
+        @update:modelValue="onBirthDateInput"
+      />         
+      <v-text-field v-model="form.phone" :label="t('register.phone')" :rules="[rules.required]" required />
     </template>
-    <v-text-field v-model="form.phone" :label="t('register.phone')" :rules="[rules.required]" required />
-    <v-text-field
-      v-model="birthDateDisplay"
-      :label="t('register.birthDate')"
-      :rules="[rules.required, rules.birthDate]"
-      required
-      @update:modelValue="onBirthDateInput"
-    />
+ 
+    
+
     <template v-if="type === 'pro'">
       <v-text-field v-model="form.companyName" :label="t('register.companyName')" :rules="[rules.required]" required />
       <v-text-field v-model="form.companyAddress" :label="t('register.companyAddress')" :rules="[rules.required]" required />

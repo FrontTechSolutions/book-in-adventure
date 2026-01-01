@@ -11,7 +11,7 @@ const router = useRouter();
 const updatePassword = async () => {
     if(!userStore.user?.email) return;
     await userStore.passwordRequestCode(userStore.user?.email)
-    router.push({ path: '/verify-account', query: { verificationType: 'password' } })
+    router.push({ path: '/verify-otp', query: { verificationType: 'password' } })
 }
 </script>
 <template>

@@ -141,9 +141,26 @@ export default {
     login:{
       title: "Connexion",
       email: "Email",
-      password  : "Mot de passe",
+      password: "Mot de passe",
       submit: "Se connecter",
-      cancel: "Annuler"
+      cancel: "Annuler",
+      forgot_password: "Mot de passe oublié ?"
+    },
+    forgot_password: {
+      title: "Mot de passe oublié",
+      description: "Entrez votre adresse email pour recevoir un code de réinitialisation.",
+      email: "Email",
+      submit: "Envoyer le code"
+    },
+    reset_password_otp: {
+      title_otp: "Vérification du code",
+      title_password: "Nouveau mot de passe",
+      description_otp: "Un code a été envoyé à {email}. Entrez-le ci-dessous.",
+      description_password: "Choisissez un nouveau mot de passe sécurisé.",
+      new_password: "Nouveau mot de passe",
+      confirm_password: "Confirmer le mot de passe",
+      password_mismatch: "Les mots de passe ne correspondent pas",
+      submit: "Réinitialiser"
     }
   },
   backend: {
@@ -195,7 +212,9 @@ export default {
       password_update_success: "Mot de passe mis à jour avec succès.",
       password_update_code_success: "Code de réinitialisation du mot de passe vérifié avec succès.",
       email_update_success: "Adresse email mise à jour avec succès.",
-      email_request_asked: "Demande de changement d'email envoyée. Vérifiez votre boîte de réception."
+      email_request_asked: "Demande de changement d'email envoyée. Vérifiez votre boîte de réception.",
+      reset_code_sent: "Code de réinitialisation envoyé. Vérifiez votre email.",
+      code_resent: "Code renvoyé avec succès."
     },
     errorCommon:{
       common: "Une erreur est survenue. Veuillez réessayer plus tard."

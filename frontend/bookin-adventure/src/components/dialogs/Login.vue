@@ -41,6 +41,11 @@ const login = async () => {
     })
   }
 }
+
+const openForgotPassword = () => {
+  open.value = false
+  commonStore.dialogs.forgotPassword = true
+}
 </script>
 
 <template>
@@ -60,6 +65,11 @@ const login = async () => {
           type="password"
           required
         />
+        <div class="text-right mt-2">
+          <a href="#" class="forgot-password-link" @click.prevent="openForgotPassword">
+            {{ $t('dialogs.login.forgot_password') }}
+          </a>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -69,3 +79,15 @@ const login = async () => {
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped>
+.forgot-password-link {
+  color: rgb(var(--v-theme-primary));
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+</style>

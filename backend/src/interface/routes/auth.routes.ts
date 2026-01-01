@@ -12,9 +12,9 @@ router.put('/update/:id', authenticateToken, authController.update);
 router.get('/user/:id', authenticateToken, authController.getUserById);
 router.post('/verify-account', authController.verifyAccount);
 router.post('/resend-verification-code', authController.resendVerificationCode);
-router.post('/password-request/code', authenticateToken, authController.passwordRequestCode);
-router.post('/password-confirm/code', authenticateToken, authController.passwordConfirmCode);
-router.post('/password-confirm', authenticateToken, authController.passwordConfirm);
+router.post('/password-request/code', authController.passwordRequestCode);
+router.post('/password-confirm/code', authController.passwordConfirmCode);
+router.post('/password-confirm', authController.passwordConfirm);
 router.post('/email-request', authenticateToken, authController.emailRequest);
 router.post('/email-confirm/code', authenticateToken, authController.emailConfirmCode);
 

@@ -157,7 +157,7 @@ const authController = {
       );
 
       res.status(200).json({
-        user: { id: user._id, email: user.email, role: user.role },
+        user: { id: user._id, email: user.email, role: user.role, isVerified: user.isVerified },
         token,
       });
     } catch (err) {
@@ -280,9 +280,6 @@ const authController = {
       if (!user) {
         return res.status(404).json({ error: 'error.user_not_found' });
       }
-      if (!req.user || req.user.id !== user._id.toString()) {
-        return res.status(403).json({ error: 'error.forbidden' });
-      }
 
       const code = generateVerificationCode();
       console.log('Generated password reset code:', code);
@@ -314,9 +311,6 @@ const authController = {
       if (!user) {
         return res.status(404).json({ error: 'error.user_not_found' });
       }
-      if (!req.user || req.user.id !== user._id.toString()) {
-        return res.status(403).json({ error: 'error.forbidden' });
-      }
       if (!user.passwordResetExpiresAt || user.passwordResetExpiresAt.getTime() < Date.now()) {
         return res.status(400).json({ error: 'error.code_expired' });
       }
@@ -347,9 +341,6 @@ const authController = {
 
       if (!user) {
         return res.status(404).json({ error: 'error.user_not_found' });
-      }
-      if (!req.user || req.user.id !== user._id.toString()) {
-        return res.status(403).json({ error: 'error.forbidden' });
       }
 
       // Vérifier le nombre de tentatives

@@ -13,12 +13,16 @@ type AlertData = {
 export const useCommonStore = defineStore('common', () => {
     const dialogs = ref({
         login: false,
-        passwordUpdate: false
+        passwordUpdate: false,
+        forgotPassword: false,
+        resetPasswordOtp: false
     })
+
+    const resetPasswordEmail = ref('')
 
     const alerts: Ref<AlertData[]> = ref([]);   
 
-    
+
     const addAlert= (alert: AlertData) => {
         // Ajoute automatiquement un ID si non fourni
         const alertWithId = {
@@ -59,6 +63,7 @@ export const useCommonStore = defineStore('common', () => {
 
     return {
         dialogs,
+        resetPasswordEmail,
         alerts, addAlert, removeAlert,
         toasters, addToaster, removeToaster, clearAllToasters
     }    

@@ -49,7 +49,7 @@ const cancel = () => {
 
 <template>
 
-<v-card class="ma-4">
+<v-card>
     <v-card-title>{{ t('userPasswordUpdate.title') }}</v-card-title>
     <v-card-text>
     <v-form ref="formRefPassword" @submit.prevent="submit">

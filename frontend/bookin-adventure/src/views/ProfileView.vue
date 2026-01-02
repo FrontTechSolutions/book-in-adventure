@@ -14,15 +14,29 @@ const showEmailUpdate = computed(() => route.query.showEmailUpdate === 'true')
 
 </script>
 <template>
-    <ProfileUpdate v-if="showProfileUpdate" :open="showProfileUpdate" @close="showProfileUpdate = false" />
-    
-    <PasswordUpdate v-else-if="showPasswordUpdate" />
+    <v-container class="pa-4">
+        <v-row v-if="showProfileUpdate || showPasswordUpdate || showEmailUpdate">
+            <v-col cols="12">
+                <ProfileUpdate v-if="showProfileUpdate" :open="showProfileUpdate" @close="showProfileUpdate = false" />
+            </v-col>
+            <v-col cols="12">
+                <PasswordUpdate v-if="showPasswordUpdate" />
+            </v-col>        
+            <v-col cols="12">
+                <EmailUpdate v-if="showEmailUpdate" />
+            </v-col>            
+        </v-row>
 
-    <EmailUpdate v-else-if="showEmailUpdate" />
-
-    <template v-else>
-        <ProfileDisplay @edit="showProfileUpdate = true" />
-        <PasswordDisplay />
-        <EmailDisplay/>
-    </template>
+        <v-row v-else>
+            <v-col cols="12" md="4">
+                <ProfileDisplay @edit="showProfileUpdate = true" />
+            </v-col>
+            <v-col cols="12" md="4">
+                <PasswordDisplay />
+            </v-col>
+            <v-col cols="12" md="4">
+                <EmailDisplay/>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>

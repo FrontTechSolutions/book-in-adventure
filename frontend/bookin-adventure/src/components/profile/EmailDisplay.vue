@@ -9,7 +9,7 @@ const updateEmail = () => {
 };
 </script>
 <template>
-    <v-card class="ma-4">
+    <v-card>
         <v-card-title>{{ t('userEmail.title') }}</v-card-title>
         <v-card-text>
             <p>{{ t('userEmail.email') }} : {{ userStore.user?.email }}</p>          

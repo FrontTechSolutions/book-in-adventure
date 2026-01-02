@@ -48,7 +48,7 @@ const cancel = () => {
 
 <template>
 
-<v-card class="ma-4">
+<v-card>
     <v-card-title>{{ t('userEmailUpdate.title') }}</v-card-title>
     <v-card-text>
     <v-form ref="formRefEmail" @submit.prevent="submit">

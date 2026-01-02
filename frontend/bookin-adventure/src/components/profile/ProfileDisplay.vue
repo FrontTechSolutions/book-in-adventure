@@ -27,7 +27,7 @@ onMounted(async () => { //TODO mettre dans un try catch avec toaster
 });
 </script>
 <template>
-    <v-card class="ma-4">
+    <v-card>
         <v-card-title>Profile View</v-card-title>
         <v-card-text>
             <p>{{ t('userProfile.fields.lastName') }} : {{ userProfile?.lastName }}</p>

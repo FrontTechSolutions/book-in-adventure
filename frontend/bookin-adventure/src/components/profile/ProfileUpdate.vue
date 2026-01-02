@@ -45,7 +45,7 @@ const onSubmit = async (formData: any, type: string) => {
 
 </script>
 <template>
-  <v-card class="ma-4">
+  <v-card>
       <v-card-title>{{ t('userProfileUpdate.title') }}</v-card-title>
       <v-card-text>
           <UserForm mode="edit" :initial="userProfile" :onSubmit="onSubmit">

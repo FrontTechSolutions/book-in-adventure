@@ -15,7 +15,7 @@ const updatePassword = async () => {
 }
 </script>
 <template>
-    <v-card class="ma-4">
+    <v-card>
         <v-card-title>{{ t('userPassword.title') }}</v-card-title>
         <v-card-text>
             <p>{{ t('userPassword.password') }} : ******</p>          

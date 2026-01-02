@@ -15,6 +15,10 @@ export default {
   App:{
     title: "Book'in Adventure",
   },
+  home:{
+    welcome: "Book'in Adventure",
+    subtitle: "Votre prochaine aventure commence ici",
+  },
   auth: {
     login: 'Me connecter',
     register: 'Inscription',

@@ -34,7 +34,7 @@ watch(group, () => {
 })
 </script>
 <template>
-      <v-app-bar color="primary">
+      <v-app-bar color="primary" class="rounded-t-lg">
         <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <HeaderTitle />
         <LogoutMenu v-if="userStore.isLoggedIn" />

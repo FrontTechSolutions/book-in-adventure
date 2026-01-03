@@ -1,3 +1,5 @@
+import type { Address } from './Address';
+
 export interface Pro {
   _id?: string
   user_id: string
@@ -15,7 +17,7 @@ export interface Pro {
     others?: string[]
   }
   openingHours?: Record<string, any>
-  address?: string
+  address?: Address
   cancellationPolicy?: string
   animators?: string[]
   activities?: string[]

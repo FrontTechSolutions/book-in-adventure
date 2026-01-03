@@ -1,3 +1,5 @@
+import type { Address } from "../Address";
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -29,7 +31,7 @@ export interface RegisterProPayload {
   role: 'pro'
   phone: string
   companyName: string
-  companyAddress: string
+  companyAddress: Address
   birthDate?: string
 }
 

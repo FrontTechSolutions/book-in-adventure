@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserForm } from '@/composables/useUserForm'
 import type { User } from '@/interfaces/User';
+import type { Address } from '@/interfaces/Address';
 import { formatISO, parse, format, parseISO } from 'date-fns';
+import AddressInput from './AddressInput.vue';
 
 
 const props = defineProps<{
@@ -17,6 +19,11 @@ const props = defineProps<{
 const { t } = useI18n()
 const { type, form, rules } = useUserForm(props.initial)
 console.log('form.value.birthDate:', form.value.birthDate)
+
+// Watch pour déboguer la mise à jour de companyAddress
+watch(() => form.value.companyAddress, (newVal) => {
+  console.log('companyAddress changed to:', newVal)
+}, { deep: true })
 
 
 const formRef = ref()
@@ -43,6 +50,9 @@ function onBirthDateInput(val: string) {
 
 const submit = async () => {
   const result = await formRef.value?.validate?.()
+  console.log('Form validation result:', result)
+  console.log('Submitting form with data:', form.value, 'and type:', type.value)
+  console.log('companyAddress value:', form.value.companyAddress)
   if (!result || result.valid === false) return
   await props.onSubmit({ ...form.value }, type.value)
 }
@@ -87,7 +97,12 @@ const submit = async () => {
 
     <template v-if="type === 'pro'">
       <v-text-field v-model="form.companyName" :label="t('register.companyName')" :rules="[rules.required]" required />
-      <v-text-field v-model="form.companyAddress" :label="t('register.companyAddress')" :rules="[rules.required]" required />
+      <AddressInput 
+        v-model="form.companyAddress" 
+        :label="t('register.companyAddress')" 
+        :rules="[rules.required]" 
+        required 
+      />
     </template>
     <!-- <v-alert v-if="props.error" type="error" class="mt-2">{{ props.error }}</v-alert> -->
     <slot name="actions" />

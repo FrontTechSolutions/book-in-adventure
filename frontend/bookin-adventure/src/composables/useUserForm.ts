@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { Address } from '@/interfaces/Address'
 
 export function useUserForm(initial?: any) {
   const { t } = useI18n()
@@ -11,9 +12,8 @@ export function useUserForm(initial?: any) {
     firstName: initial?.firstName || '',
     phone: initial?.phone || '',
     companyName: initial?.companyName || '',
-    companyAddress: initial?.companyAddress || '',
+    companyAddress: (initial?.companyAddress as Address | null) ?? null,
     birthDate: initial?.birthDate || '',
-    logo: initial?.logo || '',
   })
 
   const rules = {

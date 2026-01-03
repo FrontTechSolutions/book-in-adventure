@@ -69,6 +69,7 @@ export const useUserStore = defineStore('user', () => {
 
   //actions
   const register = async (payload: RegisterPayload): Promise<RegisterResponse> => {
+    console.log('Registering user with payload:', payload);
     loading.value = true
     error.value = undefined
     try {

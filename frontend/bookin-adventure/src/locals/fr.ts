@@ -48,7 +48,8 @@ export default {
     password_min: "6 caractères minimum",
     name_min: "2 lettres minimum",
     name_no_digits: "Pas de chiffres autorisés",
-    age_min: "Vous devez avoir plus de 18 ans"
+    age_min: "Vous devez avoir plus de 18 ans",
+    birthDate_invalid: "Format de date invalide (JJ/MM/AAAA)"
   },
   activity: {
     title: "Créer une activité",

@@ -1,3 +1,5 @@
+import { Address } from './Address';
+
 export interface IPro {
   _id?: string;
   user_id: string;
@@ -15,7 +17,7 @@ export interface IPro {
     others?: string[];
   };
   openingHours?: Record<string, any>;
-  address?: string;
+  address?: Address;
   cancellationPolicy?: string;
   animators?: string[];
   activities?: string[];

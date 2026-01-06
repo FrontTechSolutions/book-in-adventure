@@ -1,8 +1,10 @@
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import authRoutes from './interface/routes/auth.routes.js';
+import stripeRoutes from './interface/routes/stripe.routes.js';
 
 
 const app = express();
@@ -18,6 +20,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 // Test route
 app.get('/', (req, res) => res.send('API Book-in Adventure OK'));

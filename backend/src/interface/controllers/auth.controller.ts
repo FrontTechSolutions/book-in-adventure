@@ -78,10 +78,6 @@ const authController = {
       if (role === 'pro') {
         userData.companyName = companyName;
         userData.companyAddress = companyAddress;
-        userData.activityDescription = activityDescription;
-        if (logo) userData.logo = logo;
-        if (openingHours) userData.openingHours = openingHours;
-        if (website) userData.website = website;
       }
 
       const user = await User.create(userData);

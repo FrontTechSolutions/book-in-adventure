@@ -2,5 +2,8 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/google.maps": "^3.58.1"
   }
 }

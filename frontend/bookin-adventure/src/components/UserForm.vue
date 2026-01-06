@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserForm } from '@/composables/useUserForm'
 import type { User } from '@/interfaces/User';
-import type { Address } from '@/interfaces/Address';
 import { formatISO, parse, format, parseISO } from 'date-fns';
 import AddressInput from './AddressInput.vue';
 
@@ -17,18 +16,13 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { type, form, rules } = useUserForm(props.initial)
-console.log('form.value.birthDate:', form.value.birthDate)
-
-// Watch pour déboguer la mise à jour de companyAddress
-watch(() => form.value.companyAddress, (newVal) => {
-  console.log('companyAddress changed to:', newVal)
-}, { deep: true })
+const { type, form, rules, onBirthDateInput } = useUserForm(props.initial)
 
 
 const formRef = ref()
 
 // birthDate affichée au format dd/MM/yyyy
+
 const birthDateDisplay = ref('');
 if (form.value.birthDate) {
   if (/^\d{4}-\d{2}-\d{2}T/.test(form.value.birthDate)) {
@@ -38,21 +32,15 @@ if (form.value.birthDate) {
   }
 }
 
-function onBirthDateInput(val: string) {
-  birthDateDisplay.value = val;
-  // Met à jour form.value.birthDate en ISO pour le backend
-  if (val) {
-    form.value.birthDate = formatISO(parse(val, 'dd/MM/yyyy', new Date()));
-  } else {
-    form.value.birthDate = undefined;
-  }
-}
+const birthDateProxy = computed({
+  get: () => birthDateDisplay.value,
+  set: (val: string) => onBirthDateInput(val, birthDateDisplay, form)
+})
+
+
 
 const submit = async () => {
   const result = await formRef.value?.validate?.()
-  console.log('Form validation result:', result)
-  console.log('Submitting form with data:', form.value, 'and type:', type.value)
-  console.log('companyAddress value:', form.value.companyAddress)
   if (!result || result.valid === false) return
   await props.onSubmit({ ...form.value }, type.value)
 }
@@ -72,11 +60,11 @@ const submit = async () => {
       <v-text-field v-model="form.lastName" :label="t('register.legal_lastName')" :rules="[rules.required, rules.name]" required />
       <v-text-field v-model="form.firstName" :label="t('register.legal_firstName')" :rules="[rules.required, rules.name]" required />
       <v-text-field
-        v-model="birthDateDisplay"
+        v-model="birthDateProxy"
         :label="t('register.legal_birthDate')"
         :rules="[rules.required, rules.birthDate]"
+        placeholder="JJ/MM/AAAA"
         required
-        @update:modelValue="onBirthDateInput"
       />   
       <v-text-field v-model="form.phone" :label="t('register.legal_phone')" :rules="[rules.required]" required />      
     </template>
@@ -84,11 +72,11 @@ const submit = async () => {
       <v-text-field v-model="form.lastName" :label="t('register.lastName')" :rules="[rules.required, rules.name]" required />
       <v-text-field v-model="form.firstName" :label="t('register.firstName')" :rules="[rules.required, rules.name]" required />
       <v-text-field
-        v-model="birthDateDisplay"
+        v-model="birthDateProxy"
         :label="t('register.birthDate')"
         :rules="[rules.required, rules.birthDate]"
+        placeholder="JJ/MM/AAAA"
         required
-        @update:modelValue="onBirthDateInput"
       />         
       <v-text-field v-model="form.phone" :label="t('register.phone')" :rules="[rules.required]" required />
     </template>
@@ -98,10 +86,8 @@ const submit = async () => {
     <template v-if="type === 'pro'">
       <v-text-field v-model="form.companyName" :label="t('register.companyName')" :rules="[rules.required]" required />
       <AddressInput 
+        :initial="props.initial"
         v-model="form.companyAddress" 
-        :label="t('register.companyAddress')" 
-        :rules="[rules.required]" 
-        required 
       />
     </template>
     <!-- <v-alert v-if="props.error" type="error" class="mt-2">{{ props.error }}</v-alert> -->

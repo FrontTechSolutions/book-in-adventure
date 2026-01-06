@@ -1,150 +1,212 @@
-import { ref, onMounted } from 'vue';
-import type { Address } from '@/interfaces/Address';
-import type {} from '@types/google.maps';
+import { ref, onMounted } from 'vue'
+import type { Address } from '@/interfaces/Address'
 
 
+let loaderPromise: Promise<void> | null = null
 
 export function useGoogleMaps(apiKey: string) {
-  const isLoaded = ref(false);
-  const isLoading = ref(false);
+  const isLoaded = ref(false)
+  const isLoading = ref(false)
 
-  const loadScript = () => {
-    return new Promise<void>((resolve, reject) => {
-      if (window.google?.maps?.importLibrary) {
-        isLoaded.value = true;
-        resolve();
-        return;
-      }
+  /* -------------------------------------------------------------------------- */
+  /*                            Google Maps Loader                               */
+  /* -------------------------------------------------------------------------- */
 
-      // Dynamic Loader officiel de Google Maps
-      ((g: any) => {
-        var h: any, a: any, k: any, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window as any;
-        b = b[c] || (b[c] = {});
-        var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams(), u = () => h || (h = new Promise(async (f, n) => {
-          await (a = m.createElement("script"));
-          e.set("libraries", [...r] + "");
-          for (k in g) e.set(k.replace(/[A-Z]/g, (t: any) => "_" + t[0].toLowerCase()), g[k]);
-          e.set("callback", c + ".maps." + q);
-          a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
-          d[q] = f;
-          a.onerror = () => h = n(Error(p + " could not load."));
-          a.nonce = m.querySelector("script[nonce]")?.nonce || "";
-          m.head.append(a)
-        }));
-        d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f: any, ...n: any) => r.add(f) && u().then(() => d[l](f, ...n))
-      })({
-        key: apiKey,
-        v: "weekly",
-        language: "fr"
-      });
+const loadScript = async (): Promise<void> => {
+  if (isLoaded.value) return
+  if (loaderPromise) return loaderPromise
 
-      isLoaded.value = true;
-      resolve();
-    });
-  };
+  isLoading.value = true
 
-  const parseAddressComponents = (place: google.maps.places.PlaceResult): Address | null => {
-    if (!place.geometry?.location || !place.address_components) {
-      return null;
+  loaderPromise = new Promise<void>((resolve, reject) => {
+    if (window.google?.maps) {
+      isLoaded.value = true
+      isLoading.value = false
+      resolve()
+      return
     }
 
-    const components: Record<string, string> = {};
-    place.address_components.forEach((component) => {
-      const type = component.types[0];
-      components[type] = component.long_name;
-    });
+    // Charger l'Extended Component Library (pour gmp-place-autocomplete)
+    const extendedScript = document.createElement('script')
+    extendedScript.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=places,maps&callback=Function.prototype&v=weekly&language=fr`
+    extendedScript.async = true
+    extendedScript.defer = true
+
+    extendedScript.onload = () => {
+      isLoaded.value = true
+      isLoading.value = false
+      resolve()
+    }
+
+    extendedScript.onerror = () => {
+      isLoading.value = false
+      reject(new Error('Failed to load Google Maps API'))
+    }
+
+    document.head.appendChild(extendedScript)
+  })
+
+  return loaderPromise
+}
+
+
+  /* -------------------------------------------------------------------------- */
+  /*                         Places Autocomplete (v2)                            */
+  /* -------------------------------------------------------------------------- */
+
+const initAutocomplete = async (
+  container: HTMLElement,
+  onPlaceChanged: (address: Address) => void,
+  onError?: (message: string) => void
+): Promise<HTMLElement> => {
+  await loadScript()
+
+  const autocomplete = document.createElement('gmp-place-autocomplete') as any
+
+  autocomplete.setAttribute('type', 'address')
+  autocomplete.setAttribute('country', 'fr')
+
+  container.replaceChildren(autocomplete)
+
+  autocomplete.addEventListener('gmp-placeselect', async (event: any) => {
+
+    console.log('Place selected event:', event)
+
+    try {
+      const place = event.detail.place
+
+      await place.fetchFields({
+        fields: ['location', 'formattedAddress', 'addressComponents'],
+      })
+
+      // 🇫🇷 Validation France
+      const countryCode = place.addressComponents
+        ?.find((c: any) => c.types.includes('country'))
+        ?.shortText?.toLowerCase()
+
+      console.log('Selected country code:', countryCode)
+
+      if (countryCode !== 'fr') {
+        // ❌ reset input
+        autocomplete.value = ''
+
+        // 📢 message UX
+        onError?.('Veuillez sélectionner une adresse située en France')
+
+        return
+      }
+
+      // ✅ parsing
+      const components: Record<string, string> = {}
+      place.addressComponents?.forEach((c: any) => {
+        components[c.types[0]] = c.longText || c.shortText || ''
+      })
+
+      onPlaceChanged({
+        formatted: place.formattedAddress ?? '',
+        lat: place.location?.lat(),
+        lng: place.location?.lng(),
+        street_number: components.street_number ?? '',
+        route: components.route ?? '',
+        city:
+          components.locality ??
+          components.administrative_area_level_2 ??
+          '',
+        postalCode: components.postal_code ?? '',
+        country: components.country ?? '',
+      })
+    } catch (err) {
+      onError?.('Une erreur est survenue lors de la sélection de l’adresse')
+    }
+  })
+
+  return autocomplete
+}
+
+  /* -------------------------------------------------------------------------- */
+  /*                    Places Autocomplete Service (Vuetify)                    */
+  /* -------------------------------------------------------------------------- */
+
+const searchPlaces = async (input: string): Promise<Array<{ title: string; placeId: string }>> => {
+  await loadScript()
+  
+  if (!input || input.length < 3) return []
+
+  try {
+    const { AutocompleteSuggestion } = await google.maps.importLibrary('places') as google.maps.PlacesLibrary
+    
+    const request = {
+      input,
+      includedRegionCodes: ['fr'],
+      locationRestriction: undefined,
+    }
+
+    const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(request)
+    
+    return suggestions
+      .filter((suggestion) => suggestion.placePrediction)
+      .map((suggestion) => {
+        const prediction = suggestion.placePrediction!
+        return {
+          title: prediction.text.toString(),
+          placeId: prediction.placeId // Utiliser placeId directement
+        }
+      })
+  } catch (error) {
+    console.error('Error fetching autocomplete suggestions:', error)
+    return []
+  }
+}
+
+const getPlaceDetails = async (placeId: string): Promise<Address> => {
+  await loadScript()
+
+  try {
+    const { Place } = await google.maps.importLibrary('places') as google.maps.PlacesLibrary
+
+    // Utiliser le format de ressource "places/{placeId}" pour la nouvelle API
+    // La propriété doit être "id" mais le placeId seul suffit
+    const place = new Place({
+      id: placeId,
+    })
+
+    await place.fetchFields({
+      fields: ['addressComponents', 'formattedAddress', 'location'],
+    })
+
+    const components: Record<string, string> = {}
+    place.addressComponents?.forEach((c) => {
+      const type = c.types?.[0]
+      if (type) {
+        components[type] = c.longText || c.shortText || ''
+      }
+    })
 
     return {
-      formatted: place.formatted_address || '',
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-      street_number: components.street_number,
-      route: components.route,
-      city: components.locality || components.administrative_area_level_2 || '',
-      postalCode: components.postal_code || '',
-      country: components.country || '',
-    };
-  };
-
-  const initAutocomplete = async (
-    container: HTMLElement,
-    onPlaceChanged: (address: Address) => void
-  ) => {
-    if (!window.google?.maps) {
-      console.error('Google Maps API not loaded');
-      return null;
+      formatted: place.formattedAddress ?? '',
+      lat: place.location?.lat() ?? 0,
+      lng: place.location?.lng() ?? 0,
+      street_number: components.street_number ?? '',
+      route: components.route ?? '',
+      city: components.locality ?? components.administrative_area_level_2 ?? '',
+      postalCode: components.postal_code ?? '',
+      country: components.country ?? '',
     }
+  } catch (error) {
+    throw new Error(`Place details failed: ${error}`)
+  }
+}
 
-    // Charge explicitement la librairie Places pour s'assurer que les Web Components sont enregistrés
-    // C'est crucial pour que gmp-place-autocomplete soit reconnu
-    await google.maps.importLibrary("places");
+  /* -------------------------------------------------------------------------- */
 
-    console.log('Creating gmp-place-autocomplete element');
-    
-    // Utilise le nouveau PlaceAutocompleteElement (Web Component)
-    const autocompleteElement = document.createElement('gmp-place-autocomplete') as any;
-    autocompleteElement.setAttribute('type', 'address');
-    autocompleteElement.setAttribute('country', 'fr');
-    
-    console.log('Autocomplete element created:', autocompleteElement);
-    console.log('Is custom element defined?', customElements.get('gmp-place-autocomplete'));
-    
-    // Remplace le contenu du container
-    container.innerHTML = '';
-    container.appendChild(autocompleteElement);
-
-    console.log('Adding gmp-placeselect listener');
-    autocompleteElement.addEventListener('gmp-placeselect', async (event: any) => {
-      try {
-        const place = event.detail.place;
-        console.log('Place selected, fetching fields...');
-        
-        // Utilise les nouveaux noms de champs de l'API Place
-        await place.fetchFields({
-          fields: ['location', 'formattedAddress', 'addressComponents']
-        });
-        
-        console.log('Place fields fetched:', place);
-
-        // Parsing manuel adapté à la nouvelle structure de l'objet Place
-        const components: Record<string, string> = {};
-        if (place.addressComponents) {
-          place.addressComponents.forEach((component: any) => {
-            const type = component.types[0];
-            // Note: La nouvelle API utilise longText/shortText au lieu de long_name/short_name
-            components[type] = component.longText || component.shortText || '';
-          });
-        }
-
-        const address: Address = {
-          formatted: place.formattedAddress || '',
-          lat: place.location?.lat(),
-          lng: place.location?.lng(),
-          street_number: components.street_number || '',
-          route: components.route || '',
-          city: components.locality || components.administrative_area_level_2 || '',
-          postalCode: components.postal_code || '',
-          country: components.country || '',
-        };
-
-        console.log('Address parsed successfully:', address);
-        onPlaceChanged(address);
-      } catch (error) {
-        console.error('Error handling place selection:', error);
-      }
-    });
-
-    return autocompleteElement;
-  };
-
-  onMounted(() => {
-    loadScript();
-  });
+  onMounted(loadScript)
 
   return {
     isLoaded,
+    isLoading,
     loadScript,
     initAutocomplete,
-    parseAddressComponents,
-  };
+    searchPlaces,
+    getPlaceDetails,
+  }
 }

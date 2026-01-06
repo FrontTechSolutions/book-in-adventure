@@ -41,7 +41,7 @@ const onSubmit = async (formData: any, type: string) => {
 </script>
 
 <template>
-  <v-card class="mx-auto my-8" max-width="500">
+  <v-card>
     <v-card-title>{{ t('register.title') }}</v-card-title>
     <v-card-text>
       <UserForm

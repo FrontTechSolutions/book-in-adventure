@@ -40,7 +40,7 @@ export default {
     birthDate: "Date de naissance",
     legal_birthDate: "Date de naissance du responsable légal",
     companyName: "Nom de l'entreprise",
-    companyAddress: "Adresse de l'entreprise",
+    companyAddress: "Adresse du siège social",
     submit: "Créer mon compte",
     cancel: "Annuler",
     required: "Champ requis",
@@ -49,7 +49,8 @@ export default {
     name_min: "2 lettres minimum",
     name_no_digits: "Pas de chiffres autorisés",
     age_min: "Vous devez avoir plus de 18 ans",
-    birthDate_invalid: "Format de date invalide (JJ/MM/AAAA)"
+    birthDate_invalid: "Format de date invalide (JJ/MM/AAAA)",
+    pro_info: "Les informations entrées ici ne seront pas visibles par les clients. Elles servent uniquement à la gestion de votre compte professionnel."
   },
   activity: {
     title: "Créer une activité",
@@ -110,7 +111,7 @@ export default {
       phone: "Téléphone",
       birthDate: "Date de naissance",
       companyName: "Nom de l'entreprise",
-      companyAddress: "Adresse de l'entreprise",
+      companyAddress: "Adresse du siège social",
     }
   },
   userProfileUpdate:{
@@ -178,7 +179,7 @@ export default {
       role_invalid: "Rôle invalide",
       phone_required: "Téléphone requis",
       companyname_required: "Nom de l'entreprise requis",
-      companyaddress_required: "Adresse de l'entreprise requise",
+      companyaddress_required: "Adresse du siège social requise",
       activitydescription_required: "Description de l'activité requise",
       account_creation_failed: "Impossible de créer le compte",
       server: "Erreur serveur",

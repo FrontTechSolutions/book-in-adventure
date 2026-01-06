@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserForm } from '@/composables/useUserForm'
 import type { User } from '@/interfaces/User';
-import { formatISO, parse, format, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import AddressInput from './AddressInput.vue';
 
 
@@ -16,7 +16,16 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { type, form, rules, onBirthDateInput } = useUserForm(props.initial)
+
+const TYPE_KEY = 'registerType';
+const { type, form, rules, onBirthDateInput } = useUserForm(localStorage.getItem(TYPE_KEY) ? { ...props.initial, type: localStorage.getItem(TYPE_KEY) } : props.initial)
+
+// Persiste le type sélectionné dans localStorage
+watch(type, (val) => {
+  if (props.mode === 'register') {
+    localStorage.setItem(TYPE_KEY, val);
+  }
+})
 
 
 const formRef = ref()
@@ -52,6 +61,13 @@ const submit = async () => {
       <v-btn value="client">{{ t('register.client') }}</v-btn>
       <v-btn value="pro">{{ t('register.pro') }}</v-btn>
     </v-btn-toggle>
+    <v-alert
+        v-if="type === 'pro'"
+        type="info"
+        variant="outlined"
+        class="mb-4"
+        :text="t('register.pro_info')"
+    />
     <v-text-field v-model="form.email" :label="t('register.email')" :rules="[rules.required, rules.email]" :disabled="props.mode === 'edit'" required />
     <template v-if="props.mode !== 'pro-client' && props.mode !== 'edit'">
       <v-text-field v-model="form.password" :label="t('register.password')" type="password" :rules="[rules.required, rules.password]" required />
